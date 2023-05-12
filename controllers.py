@@ -38,3 +38,9 @@ def index():
     message = T("Hello {first_name}".format(**user) if user else "Hello")
     actions = {"allowed_actions": auth.param.allowed_actions}
     return dict(message=message, actions=actions)
+
+@action("Login")
+@action.uses("profile.html", auth, T)
+def login():
+    actions = {"allowed_actions": auth.param.allowed_actions}
+    return dict(actions=actions)

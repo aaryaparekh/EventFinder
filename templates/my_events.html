@@ -1,0 +1,45 @@
+[[extend 'layout.html']]
+
+<div class="section">
+   <div class="container">
+      <h1 class="title ">Your Events</h1>
+
+      <table class="table is-striped is-fullwidth">
+         <tr>
+             <th>Event Name</th>
+             <th>Start Time</th>
+             <th>End Time</th>
+             <th>Location</th>
+             <th></th>
+             <th></th>
+         </tr>
+
+         [[for i in range(len(events)):]]
+         <tr>
+             <td>[[=events[i].event_name]]</td>
+             <td>[[=events[i].event_start]]</td>
+             <td>[[=events[i].event_end]]</td>
+             <td>[[=events[i].location]]</td>
+
+             <td>
+                 <a class="button is-warning" href="[[=URL('edit_event', events[i].id)]]">
+                     <i class="fa fa-fw fa-pen"></i>
+                 </a>
+             </td>
+
+             <td>
+                 <a class="button is-danger" href="delete">
+                     <i class="fa fa-fw fa-trash"></i>
+                 </a>
+             </td>
+
+         </tr>
+         [[pass]]
+      </table>
+
+      <a class="button is-primary" href="">
+      <span class="icon"><i class = "fa fa-plus"></i></span>
+      <span>Add Contact</span>
+   </a>
+   </div>
+</div>

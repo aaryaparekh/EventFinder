@@ -24,11 +24,11 @@ The path follows the bottlepy syntax.
 session, db, T, auth, and tempates are examples of Fixtures.
 Warning: Fixtures MUST be declared with @action.uses({fixtures}) else your app will result in undefined behavior
 """
-#Test
 
 from py4web import action, request, abort, redirect, URL
 from yatl.helpers import A
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
+from py4web.utils.form import Form, FormStyleBulma
 
 
 @action("index")
@@ -38,3 +38,54 @@ def index():
     message = T("Hello {first_name}".format(**user) if user else "Hello")
     actions = {"allowed_actions": auth.param.allowed_actions}
     return dict(message=message, actions=actions)
+<<<<<<< Updated upstream
+=======
+
+@action("Login")
+@action.uses("profile.html", auth, T)
+def login():
+    actions = {"allowed_actions": auth.param.allowed_actions}
+    return dict(actions=actions)
+
+
+@action("my_events", method=["GET"])
+@action.uses("my_events.html", db, session)
+def my_events():
+    # rows = db(db.event.created_by == auth.user_id).select()
+    events = db(db.event).select()
+
+    return dict(events=events)
+
+
+@action("create_event", method=["GET", "POST"])
+@action.uses("create_event.html", db, session)
+def create_event():
+    form = Form(db.event, csrf_session=session, formstyle=FormStyleBulma)
+
+    if form.accepted:
+        redirect(URL('create_event'))
+
+    return dict(form=form)
+
+
+@action("edit_event/<id:int>", method=["GET", "POST"])
+@action.uses("edit_event.html", db, session)
+def edit_event(id=None):
+    if id is None:
+        redirect(URL('my_events'))
+
+    event = db.event[id]
+
+    # assert event.created_by == auth.user_id
+
+    if event is None:
+        #Nothing found
+        redirect(URL('my_events'))
+
+    form = Form(db.event, record=id, csrf_session=session, formstyle=FormStyleBulma)
+
+    if form.accepted:
+        redirect(URL('my_events'))
+
+    return dict(form=form)
+>>>>>>> Stashed changes

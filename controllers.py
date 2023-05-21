@@ -29,6 +29,9 @@ from py4web import action, request, abort, redirect, URL
 from yatl.helpers import A
 from .common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 from py4web.utils.form import Form, FormStyleBulma
+from py4web.utils.url_signer import URLSigner
+
+url_signer = URLSigner(session)
 
 
 @action("index")
@@ -46,13 +49,23 @@ def login():
 
     return dict(actions=actions)
 
-
+#TODO: Add auth to events
 @action("my_events", method=["GET"])
-@action.uses("my_events.html", db, session)
+@action.uses("my_events.html", db, session, url_signer)
 def my_events():
     # rows = db(db.event.created_by == auth.user_id).select()
-    events = db(db.event).select()
+    # events = db(db.event).select()
+    #
+    # return dict(events=events)
+    return dict(
+        get_events_url = URL('get_events', signer=url_signer),
+    )
 
+
+@action("get_events")
+@action.uses(url_signer.verify(), db)
+def get_users():
+    events = db(db.event).select()
     return dict(events=events)
 
 

@@ -21,7 +21,7 @@ from datetime import datetime
 
 db.define_table(
     'event',
-    # Field('created_by', 'reference auth_user', default=lambda: auth.user_id, readable=False, writable=False),
+    Field('created_by', 'reference auth_user', default=lambda: auth.user_id, readable=False, writable=False),
     Field('creation_timestamp', type='datetime', default=datetime.now()),
     Field('event_start', type='datetime', default=datetime.now()),
     Field('event_end', type='datetime', defaul=datetime.now()),

@@ -68,3 +68,9 @@ success!
 timestamp: 2023-05-21T16:43:30.952010
 ALTER TABLE "event" ADD "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ;
 success!
+success!
+success!
+success!
+success!
+success!
+success!

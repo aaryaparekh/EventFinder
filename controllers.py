@@ -49,6 +49,7 @@ def login():
 
     return dict(actions=actions)
 
+
 #TODO: Add auth to events
 @action("my_events", method=["GET"])
 @action.uses("my_events.html", db, session, url_signer)
@@ -66,7 +67,7 @@ def my_events():
 @action.uses(url_signer.verify(), db)
 def get_users():
     events = db(db.event).select()
-    return dict(events=events)
+    return dict(events=events, url_signer=url_signer)
 
 
 @action("create_event", method=["GET", "POST"])

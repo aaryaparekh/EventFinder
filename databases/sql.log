@@ -1,4 +1,4 @@
-timestamp: 2023-04-19T15:06:37.656524
+timestamp: 2023-05-28T13:42:37.547896
 CREATE TABLE "auth_user"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "username" CHAR(512) UNIQUE,
@@ -12,65 +12,23 @@ CREATE TABLE "auth_user"(
     "past_passwords_hash" TEXT
 );
 success!
-timestamp: 2023-04-19T15:06:37.660202
+timestamp: 2023-05-28T13:42:37.550287
 CREATE TABLE "auth_user_tag_groups"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "tagpath" CHAR(512),
     "record_id" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  
 );
 success!
-timestamp: 2023-05-15T15:55:27.251553
+timestamp: 2023-05-28T13:42:37.554465
 CREATE TABLE "event"(
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
-    "creator" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
+    "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ,
     "creation_timestamp" TIMESTAMP,
+    "event_start" TIMESTAMP,
+    "event_end" TIMESTAMP,
+    "event_name" CHAR(512),
     "location" CHAR(512),
-    "description" CHAR(512),
+    "description" TEXT,
     "image_filepath" CHAR(512)
 );
-success!
-timestamp: 2023-05-15T16:11:08.408833
-ALTER TABLE "event" ADD "event_timestamp" TIMESTAMP;
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-timestamp: 2023-05-15T17:39:22.651368
-ALTER TABLE "event" ADD "event_start" TIMESTAMP;
-timestamp: 2023-05-15T17:39:22.655247
-ALTER TABLE "event" ADD "event_end" TIMESTAMP;
-timestamp: 2023-05-15T17:39:22.657541
-ALTER TABLE "event" ADD "event_name" CHAR(512);
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-success!
-timestamp: 2023-05-21T16:43:30.952010
-ALTER TABLE "event" ADD "created_by" INTEGER REFERENCES "auth_user" ("id") ON DELETE CASCADE ON UPDATE CASCADE  ;
-success!
-success!
-success!
-success!
-success!
-success!
 success!

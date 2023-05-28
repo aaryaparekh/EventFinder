@@ -31,6 +31,8 @@ from .common import db, session, T, cache, auth, logger, authenticated, unauthen
 from py4web.utils.form import Form, FormStyleBulma
 from py4web.utils.url_signer import URLSigner
 
+import datetime
+
 url_signer = URLSigner(session)
 
 
@@ -60,6 +62,9 @@ def my_events():
     # return dict(events=events)
     return dict(
         get_events_url = URL('get_events', signer=url_signer),
+        create_event_url = URL('create_event', signer=url_signer),
+        edit_event_url = URL('edit_event', signer=url_signer),
+        # url_signer=url_signer,
     )
 
 
@@ -70,24 +75,40 @@ def get_users():
     return dict(events=events, url_signer=url_signer)
 
 
-@action("create_event", method=["GET", "POST"])
-@action.uses("create_event.html", db, session)
+@action("create_event")
+@action.uses(db, session)
 def create_event():
-    form = Form(db.event, csrf_session=session, formstyle=FormStyleBulma)
+    # form = Form(db.event, csrf_session=session, formstyle=FormStyleBulma)
+    #
+    # if form.accepted:
+    #     redirect(URL('create_event'))
+    #
+    # return dict(form=form)
 
-    if form.accepted:
-        redirect(URL('create_event'))
+    event_name = str(request.params.get('event_name'))
+    event_description = str(request.params.get('event_description'))
+    event_location = str(request.params.get('event_location'))
+    event_start = request.params.get('event_start')
+    event_end = request.params.get('event_end')
 
-    return dict(form=form)
+    #convert from miliseconds to datetime
+    event_start = datetime.datetime.fromtimestamp(int(event_start) / 1000.0)
+    event_end = datetime.datetime.fromtimestamp(int(event_end) / 1000.0)
+
+    #insert new event into db
+    db.event.insert(event_name=event_name, description=event_description, location=event_location,
+                    event_start=event_start, event_end=event_end)
 
 
-@action("edit_event/<id:int>", method=["GET", "POST"])
+@action("edit_event", method=["GET", "POST"])
 @action.uses("edit_event.html", db, session)
-def edit_event(id=None):
-    if id is None:
+def edit_event():
+    event_id = int(request.params.get('event_id'))
+
+    if event_id is None:
         redirect(URL('my_events'))
 
-    event = db.event[id]
+    event = db.event[event_id]
 
     # assert event.created_by == auth.user_id
 
@@ -95,7 +116,7 @@ def edit_event(id=None):
         #Nothing found
         redirect(URL('my_events'))
 
-    form = Form(db.event, record=id, csrf_session=session, formstyle=FormStyleBulma)
+    form = Form(db.event, record=event_id, csrf_session=session, formstyle=FormStyleBulma)
 
     if form.accepted:
         redirect(URL('my_events'))

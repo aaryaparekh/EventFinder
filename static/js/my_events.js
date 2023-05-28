@@ -10,12 +10,21 @@ let init = (app) => {
     app.data = {
         // Complete as you see fit.
         events: [],
+        modal_state: "modal",
         event_name: "",
         event_description: "",
-        modal_state: "modal",
         event_start: null,
         event_end: null,
         event_location: "",
+
+        edit_edit_modal_state: "modal",
+        edit_event_name: "",
+        edit_event_description: "",
+        edit_modal_state: "modal",
+        edit_event_start: null,
+        edit_event_end: null,
+        edit_event_location: "",
+        edit_event_id: null,
     };
     
     app.enumerate = (a) => {
@@ -57,6 +66,54 @@ let init = (app) => {
         });
     }
 
+    app.edit_event = function (event_id) {
+        for (let i = 0; i < app.vue.events.length; i++) {
+            if (app.vue.events[i].id === event_id) {
+                app.vue.edit_event_name = app.vue.events[i].event_name;
+                app.vue.edit_event_description = app.vue.events[i].description;
+                app.vue.edit_event_start = app.vue.events[i].event_start;
+                app.vue.edit_event_end = app.vue.events[i].event_end;
+                app.vue.edit_event_location = app.vue.events[i].location;
+                app.vue.edit_event_id = event_id;
+                break;
+            }
+        }
+        app.vue.edit_modal_state = "modal is-active";
+    }
+
+    app.cancel_edit_event = function () {
+        app.vue.edit_modal_state = "modal";
+    }
+
+    app.edit_event_publish = function () {
+        axios.get(edit_event_url,
+            {params: {edit_event_name: app.vue.edit_event_name,
+                    edit_event_description:app.vue.edit_event_description,
+                    edit_event_start:Date.parse(app.vue.edit_event_start),
+                    edit_event_end:Date.parse(app.vue.edit_event_end),
+                    edit_event_location: app.vue.edit_event_location,
+                    edit_event_id: app.vue.edit_event_id}}
+        ).then(function (response) {
+            //TODO: Check if form value is correct, else keep modal active and send error message
+            app.vue.edit_modal_state = "modal"
+
+            axios.get(get_events_url).then(function (response) {
+                app.vue.events = app.enumerate(response.data.events)
+            });
+
+        });
+    }
+
+    app.delete_event = function () {
+        axios.get(delete_event_url, {params: {delete_event_id: app.vue.edit_event_id}}).then(function (response) {
+            app.vue.edit_modal_state = "modal"
+
+            axios.get(get_events_url).then(function (response) {
+                app.vue.events = app.enumerate(response.data.events)
+            });
+        });
+    }
+
 
     // This contains all the methods.
     app.methods = {
@@ -65,6 +122,10 @@ let init = (app) => {
         create_event: app.create_event,
         add_new_event: app.add_new_event,
         cancel_add_new_event: app.cancel_add_new_event,
+        edit_event: app.edit_event,
+        cancel_edit_event: app.cancel_edit_event,
+        edit_event_publish: app.edit_event_publish,
+        delete_event: app.delete_event,
     };
 
     // This creates the Vue instance.

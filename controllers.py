@@ -56,14 +56,11 @@ def login():
 @action("my_events", method=["GET"])
 @action.uses("my_events.html", db, session, url_signer)
 def my_events():
-    # rows = db(db.event.created_by == auth.user_id).select()
-    # events = db(db.event).select()
-    #
-    # return dict(events=events)
     return dict(
         get_events_url = URL('get_events', signer=url_signer),
         create_event_url = URL('create_event', signer=url_signer),
         edit_event_url = URL('edit_event', signer=url_signer),
+        delete_event_url = URL('delete_event', signer=url_signer),
         # url_signer=url_signer,
     )
 
@@ -78,13 +75,6 @@ def get_users():
 @action("create_event")
 @action.uses(db, session)
 def create_event():
-    # form = Form(db.event, csrf_session=session, formstyle=FormStyleBulma)
-    #
-    # if form.accepted:
-    #     redirect(URL('create_event'))
-    #
-    # return dict(form=form)
-
     event_name = str(request.params.get('event_name'))
     event_description = str(request.params.get('event_description'))
     event_location = str(request.params.get('event_location'))
@@ -100,25 +90,32 @@ def create_event():
                     event_start=event_start, event_end=event_end)
 
 
-@action("edit_event", method=["GET", "POST"])
-@action.uses("edit_event.html", db, session)
+@action("edit_event")
+@action.uses(db, session)
 def edit_event():
-    event_id = int(request.params.get('event_id'))
+    edit_event_id = request.params.get('edit_event_id')
 
-    if event_id is None:
-        redirect(URL('my_events'))
+    edit_event_name = str(request.params.get('edit_event_name'))
+    edit_event_description = str(request.params.get('edit_event_description'))
+    edit_event_location = str(request.params.get('edit_event_location'))
+    edit_event_start = request.params.get('edit_event_start')
+    edit_event_end = request.params.get('edit_event_end')
 
-    event = db.event[event_id]
+    # convert from miliseconds to datetime
+    edit_event_start = datetime.datetime.fromtimestamp(int(edit_event_start) / 1000.0)
+    edit_event_end = datetime.datetime.fromtimestamp(int(edit_event_end) / 1000.0)
 
-    # assert event.created_by == auth.user_id
+    ret = db(db.event.id == edit_event_id).validate_and_update(event_name=edit_event_name,
+                                                          description=edit_event_description,
+                                                          location=edit_event_location,
+                                                          event_start=edit_event_start,
+                                                          event_end=edit_event_end)
 
-    if event is None:
-        #Nothing found
-        redirect(URL('my_events'))
 
-    form = Form(db.event, record=event_id, csrf_session=session, formstyle=FormStyleBulma)
 
-    if form.accepted:
-        redirect(URL('my_events'))
+@action("delete_event")
+@action.uses(db, session)
+def delete_event():
+    delete_event_id = request.params.get('delete_event_id')
+    del db.event[delete_event_id]
 
-    return dict(form=form)

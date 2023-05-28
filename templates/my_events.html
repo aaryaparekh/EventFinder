@@ -7,14 +7,11 @@
 </style>
 
 <div class="section" id="vue-target" v-cloak>
-
-
-
 <!--    <div>-->
-<!--      Edit events URL:-->
-<!--      {{edit_event_url}}-->
-<!--        [[=edit_event_url]]-->
+<!--      EVENTS:-->
+<!--      {{events}}-->
 <!--    </div>-->
+
    <div class="container">
 
       <h1 class="title ">Your Events</h1>
@@ -24,6 +21,8 @@
            <span>Add New Event</span>
        </a>
 
+
+       <!--Modal for creating events-->
        <div :class="modal_state">
            <div class="modal-background" @click="cancel_add_new_event"></div>
            <div class="modal-content">
@@ -64,17 +63,71 @@
                        </div>
                    </div>
 
-                   <button class="button is-primary" @click="create_event">Done</button>
+                   <button class="button is-primary" @click="create_event">Publish Event</button>
                    <button class="button is-danger" @click="cancel_add_new_event">Cancel</button>
                </div>
            </div>
            <button class="modal-close is-large" aria-label="close" @click="cancel_add_new_event"></button>
        </div>
 
+
+       <!--Modal for editing events-->
+       <div :class="edit_modal_state">
+           <div class="modal-background" @click="cancel_add_new_event"></div>
+           <div class="modal-content">
+               <!-- Any other Bulma elements you want -->
+               <div class="box">
+                   <div class="field">
+                       <label class="label">Event Name</label>
+                       <div class="control">
+                           <input class="input" v-model="edit_event_name" type="text" placeholder="Event name">
+                       </div>
+                   </div>
+
+                   <div class="field">
+                       <label class="label">Event Location</label>
+                       <div class="control">
+                           <input class="input" v-model="edit_event_location" type="text" placeholder="Location">
+                       </div>
+                   </div>
+
+                   <div class="field">
+                       <label class="label">Start</label>
+                       <div class="control">
+                           <input class="input" v-model="edit_event_start" type="datetime-local">
+                       </div>
+                   </div>
+
+                   <div class="field">
+                       <label class="label">End</label>
+                       <div class="control">
+                           <input class="input" v-model="edit_event_end" type="datetime-local">
+                       </div>
+                   </div>
+
+                   <div class="field">
+                       <label class="label">Description</label>
+                       <div class="control">
+                           <textarea class="textarea" v-model="edit_event_description" placeholder="Description"></textarea>
+                       </div>
+                   </div>
+
+                   <button class="button is-primary" @click="edit_event_publish">Publish Changes</button>
+                   <button class="button is-danger" @click="cancel_edit_event">Cancel</button>
+                   <button class="button is-warning is-right" @click="delete_event">
+                       <span class="icon"><i class = "fa fa-trash"></i></span>
+                        <p>Delete Event</p>
+                   </button>
+               </div>
+           </div>
+           <button class="modal-close is-large" aria-label="close" @click="cancel_add_new_event"></button>
+       </div>
+
+
        <div v-for="e in events">
            <div class="box" style="margin-top: 10px;">
                <p class="is-size-3">{{e.event_name}}
-                   <button class="button is-warning is-small">
+                   <button class="button is-warning is-small" @click="edit_event(e.id)">
                      <i class="fa fa-fw fa-pencil"></i>
                    </button>
                </p>
@@ -127,6 +180,8 @@
 <script>
     let get_events_url = "[[=XML(get_events_url)]]";
     let create_event_url = "[[=XML(create_event_url)]]";
+    let edit_event_url = "[[=XML(edit_event_url)]]";
+    let delete_event_url = "[[=XML(delete_event_url)]]";
 </script>
 <script src="js/my_events.js"></script>
 [[end]]

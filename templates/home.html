@@ -6,24 +6,40 @@
     }
 </style>
 
+<style>
+    .card .card-header {
+      box-shadow: none;
+    }
+  </style>
+
 <div class="section" id="vue-target" v-cloak>
-    <div class="columns block is-mobile has-background-grey-light">
-        <div class="column is-two-thirds">
-            <div class="block">            
-            </div>
+    <div class="columns block is-mobile">
+        <div class="column is-two-thirds has-background-grey-light">
+            
         </div>
 
-        <div class="column block has-background-light">
-            <h1 class="title">Browse</h1>
-            <div v-for="e in all_events" class="block">
-                <div class="card">
+        <div class="column">
+            <h1 class="title">Browse Events</h1>
+
+            <div class="field">
+                <p class="control has-icons-right">
+                  <input class="input is-info" type="text" placeholder="Search events" v-model='input_field' @input="search_events">
+                  <span class="icon is-small is-right is-clickable" @click="clear_search()">
+                    <i class="fa fa-times-circle"></i>
+                  </span>
+                </p>
+            </div>
+            
+
+            <div v-for="e in filtered_events" class="block">
+                <div class="card has-background-light">
                     <header class="card-header">
                         <p class="card-header-title">
                         {{e.event_name}}
                         </p>
                       <button class="card-header-icon" @click="toggle_card_content(e._idx)">
                         <span class="icon has-text-danger">
-                            <i :class="{'fa fa-angle-down': !e.show_content, 'fa fa-angle-up': e.show_content}"></i>
+                            <i :class="{'fa fa-chevron-down': !e.show_content, 'fa fa-chevron-up': e.show_content}"></i>
                         </span>
                       </button>
                     </header>

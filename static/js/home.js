@@ -6,10 +6,10 @@ let app = {};
 // creates a Vue instance, and then initializes the Vue instance.
 let init = (app) => {
 
-    // This is the Vue data.
     app.data = {
-        // Complete as you see fit.
         all_events: [],
+        filtered_events: [],
+        input_field: '',
     };    
     
     app.enumerate = (a) => {
@@ -17,6 +17,38 @@ let init = (app) => {
         let k = 0;
         a.map((e) => {e._idx = k++;});
         return a;
+    };
+
+    app.set_filtered_events = () => {
+        app.vue.filtered_events = [...app.vue.all_events];
+    };
+
+    app.search_events = function () {
+        app.vue.filtered_events = app.vue.all_events.filter((event) =>
+                event.event_name.toLowerCase().includes(app.vue.input_field.toString().toLowerCase())
+        );
+        app.sort_events();
+    };
+
+    app.sort_events = function () {
+        app.vue.filtered_events.sort(function(a, b) {
+            const dateA = new Date(a.event_start);
+            const dateB = new Date(b.event_start);
+
+            if (dateA < dateB) {
+              return -1;
+            } else if (dateA > dateB) {
+              return 1;
+            } else {
+              return 0;
+            }
+        });
+        app.enumerate(app.vue.filtered_events);
+    };
+
+    app.clear_search = function () {
+        app.vue.input_field = ''
+        app.search_events()
     };
 
     app.set_content = (a) => {
@@ -48,38 +80,39 @@ let init = (app) => {
     }
 
     app.toggle_card_content = (r_idx) => {
-        let r = app.vue.all_events[r_idx];
+        let r = app.vue.filtered_events[r_idx];
         let new_r = r;
         new_r.show_content = !r.show_content;
         new_r._idx = r._idx;
-        Vue.set(app.vue.all_events, r_idx, new_r);
+        Vue.set(app.vue.filtered_events, r_idx, new_r);
     }
 
-    // This contains all the methods.
     app.methods = {
+        set_filtered_events: app.set_filtered_events,
+        search_events: app.search_events,
+        sort_events: app.sort_events,
+        clear_search: app.clear_search,
         toggle_card_content: app.toggle_card_content,
     };
 
-    // This creates the Vue instance.
     app.vue = new Vue({
         el: "#vue-target",
         data: app.data,
         methods: app.methods
     });
 
-    // And this initializes it.
+
     app.init = () => {
-        // Put here any initialization code.
         axios.get(get_home_events_url).then(function (response) {
             app.vue.all_events = app.enumerate(response.data.all_events);
             app.vue.all_events = app.set_content(response.data.all_events);
+            app.set_filtered_events();
+            app.sort_events();            
         });
     };
 
-    // Call to the initializer.
     app.init();
 };
 
-// This takes the (empty) app object, and initializes it,
-// putting all the code in it. 
+
 init(app);

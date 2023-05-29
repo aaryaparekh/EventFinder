@@ -49,6 +49,18 @@ def login():
 
     return dict(actions=actions)
 
+@action("Home")
+@action.uses("home.html", db, auth, url_signer)
+def home():
+    return dict(
+        get_home_events_url = URL('home_list_events', signer=url_signer),
+    )
+
+@action("home_list_events")
+@action.uses(db, auth, url_signer.verify())
+def home_list_events():
+    all_events = db(db.event).select()
+    return dict(all_events=all_events)
 
 #TODO: Add auth to events
 @action("my_events", method=["GET"])
@@ -65,7 +77,7 @@ def my_events():
 
 @action("get_events")
 @action.uses(url_signer.verify(), db)
-def get_users():
+def get_events():
     events = db(db.event).select()
     return dict(events=events, url_signer=url_signer)
 

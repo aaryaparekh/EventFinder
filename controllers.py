@@ -44,11 +44,10 @@ def index():
     actions = {"allowed_actions": auth.param.allowed_actions}
     return dict(message=message, actions=actions)
 
-@action("Login")
+@action("Profile")
 @action.uses("profile.html", auth, T)
-def login():
+def Profile():
     actions = {"allowed_actions": auth.param.allowed_actions}
-
     return dict(actions=actions)
 
 @action("Home")
@@ -67,7 +66,7 @@ def home_list_events():
 #TODO: Add auth to events
 @action("my_events", method=["GET"])
 @action.uses("my_events.html", db, session, url_signer)
-def my_events():
+def my_events(events_created_by=None):
     return dict(
         get_events_url = URL('get_events', signer=url_signer),
         create_event_url = URL('create_event', signer=url_signer),

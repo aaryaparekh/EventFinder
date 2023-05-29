@@ -25,6 +25,14 @@ let init = (app) => {
         edit_event_end: null,
         edit_event_location: "",
         edit_event_id: null,
+
+        event_type: "",
+        edit_event_type: "",
+        event_types: ['Concert', 'Festival', 'Live Music', 'Sports', 'Charity', 'Fundraiser',
+        'Exhibition', 'Theatre', 'Art', 'Family and kids',
+        'Fashion', 'Food and Drink', 'Comedy', 'Film', 'Outdoors',
+        'Gaming', 'Literary', 'Conference', 'Workshop' 
+        ],
     };
     
     app.enumerate = (a) => {
@@ -54,7 +62,9 @@ let init = (app) => {
                     event_description:app.vue.event_description,
                     event_start:Date.parse(app.vue.event_start),
                     event_end:Date.parse(app.vue.event_end),
-                    event_location: app.vue.event_location}}
+                    event_location: app.vue.event_location,
+                    event_type: app.vue.event_type,
+                }}
         ).then(function (response) {
             //TODO: Check if form value is correct, else keep modal active and send error message
             app.vue.modal_state = "modal"
@@ -74,6 +84,7 @@ let init = (app) => {
                 app.vue.edit_event_start = app.vue.events[i].event_start;
                 app.vue.edit_event_end = app.vue.events[i].event_end;
                 app.vue.edit_event_location = app.vue.events[i].location;
+                app.vue.edit_event_type = app.vue.events[i].event_type;
                 app.vue.edit_event_id = event_id;
                 break;
             }
@@ -92,7 +103,8 @@ let init = (app) => {
                     edit_event_start:Date.parse(app.vue.edit_event_start),
                     edit_event_end:Date.parse(app.vue.edit_event_end),
                     edit_event_location: app.vue.edit_event_location,
-                    edit_event_id: app.vue.edit_event_id}}
+                    edit_event_type: app.vue.edit_event_type,
+                    edit_event_id: app.vue.edit_event_id,}}
         ).then(function (response) {
             //TODO: Check if form value is correct, else keep modal active and send error message
             app.vue.edit_modal_state = "modal"

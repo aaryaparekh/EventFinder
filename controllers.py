@@ -92,6 +92,7 @@ def create_event():
     event_location = str(request.params.get('event_location'))
     event_start = request.params.get('event_start')
     event_end = request.params.get('event_end')
+    event_type = request.params.get('event_type')
 
     #convert from miliseconds to datetime
     event_start = datetime.datetime.fromtimestamp(int(event_start) / 1000.0)
@@ -99,7 +100,7 @@ def create_event():
 
     #insert new event into db
     db.event.insert(event_name=event_name, description=event_description, location=event_location,
-                    event_start=event_start, event_end=event_end)
+                    event_start=event_start, event_end=event_end, event_type=event_type)
 
 
 @action("edit_event")
@@ -112,6 +113,7 @@ def edit_event():
     edit_event_location = str(request.params.get('edit_event_location'))
     edit_event_start = request.params.get('edit_event_start')
     edit_event_end = request.params.get('edit_event_end')
+    edit_event_type = request.params.get('edit_event_type')
 
     # convert from miliseconds to datetime
     edit_event_start = datetime.datetime.fromtimestamp(int(edit_event_start) / 1000.0)
@@ -121,7 +123,8 @@ def edit_event():
                                                           description=edit_event_description,
                                                           location=edit_event_location,
                                                           event_start=edit_event_start,
-                                                          event_end=edit_event_end)
+                                                          event_end=edit_event_end,
+                                                          event_type=edit_event_type)
 
 
 

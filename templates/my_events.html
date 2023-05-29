@@ -57,6 +57,17 @@
                    </div>
 
                    <div class="field">
+                        <label class="label">Type</label>
+                        <div class="control">
+                            <div class="select">
+                                <select v-model="event_type">
+                                    <option v-for="t in event_types" :key="t" :value="t">{{ t }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                   <div class="field">
                        <label class="label">Description</label>
                        <div class="control">
                            <textarea class="textarea" v-model="event_description" placeholder="Description"></textarea>
@@ -105,6 +116,17 @@
                        </div>
                    </div>
 
+                    <div class="field">
+                        <label class="label">Type</label>
+                        <div class="control">
+                            <div class="select">
+                                <select v-model="edit_event_type">
+                                    <option v-for="t in event_types" :key="t" :value="t">{{ t }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
                    <div class="field">
                        <label class="label">Description</label>
                        <div class="control">
@@ -133,6 +155,7 @@
                </p>
                <p><i class="fa fa-fw fa-clock-o"></i>{{e.event_start}} to {{e.event_end}}</p>
                <p><i class="fa fa-fw fa-location-arrow"></i>{{e.location}}</p>
+               <p>{{e.event_type}}</p>
                <p>{{e.description}}</p>
            </div>
        </div>

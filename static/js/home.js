@@ -19,9 +19,45 @@ let init = (app) => {
         return a;
     };
 
+    app.set_content = (a) => {
+        a.map((e) => {
+            e.show_content = false;
+            const startDateObj = new Date(e.event_start);
+            const endDateObj = new Date(e.event_end);
+            
+            const startDate = startDateObj.toDateString();
+            const endDate = endDateObj.toDateString();
+            if (startDate === endDate) {
+                e.formatted_date = startDate
+            }  else {
+                e.formatted_date = startDate + " - " + endDate;
+            }
+            startTime = startDateObj.toLocaleTimeString([], {
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true
+            });
+            endTime = endDateObj.toLocaleTimeString([], {
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true
+            });
+            e.formatted_time = startTime + " - " + endTime;      
+        });
+        return a;
+    }
+
+    app.toggle_card_content = (r_idx) => {
+        let r = app.vue.all_events[r_idx];
+        let new_r = r;
+        new_r.show_content = !r.show_content;
+        new_r._idx = r._idx;
+        Vue.set(app.vue.all_events, r_idx, new_r);
+    }
+
     // This contains all the methods.
     app.methods = {
-        // Complete as you see fit.
+        toggle_card_content: app.toggle_card_content,
     };
 
     // This creates the Vue instance.
@@ -36,6 +72,7 @@ let init = (app) => {
         // Put here any initialization code.
         axios.get(get_home_events_url).then(function (response) {
             app.vue.all_events = app.enumerate(response.data.all_events);
+            app.vue.all_events = app.set_content(response.data.all_events);
         });
     };
 

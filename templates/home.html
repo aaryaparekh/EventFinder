@@ -21,14 +21,14 @@
                         <p class="card-header-title">
                         {{e.event_name}}
                         </p>
-                      <button class="card-header-icon" aria-label="more options">
-                        <span class="icon">
-                          <i class="fa fa-angle-down" aria-hidden="true"></i>
+                      <button class="card-header-icon" @click="toggle_card_content(e._idx)">
+                        <span class="icon has-text-danger">
+                            <i :class="{'fa fa-angle-down': !e.show_content, 'fa fa-angle-up': e.show_content}"></i>
                         </span>
                       </button>
                     </header>
                     
-                    <div class="card-content">
+                    <div class="card-content" v-show="e.show_content">
                         <div class="content">
                           {{e.description}}
                         </div>
@@ -37,7 +37,9 @@
                       <footer class="card-footer block">
                         <div class="tags">
                             <span class="tag is-warning is-dark">{{e.location}}</span>
-                            <span class="tag is-warning is-dark">{{e.event_start}}</span>
+                            <span class="tag is-warning is-dark">{{e.formatted_date}}</span>
+                            <span class="tag is-warning is-dark">{{e.formatted_time}}</span>
+                            <span class="tag is-warning is-dark">{{e.event_type}}</span>
                         </div>
                       </footer>
                   </div>

@@ -1,7 +1,5 @@
 [[extend 'layout.html']]
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-
 <div class="section">
   <!--box-->
   <head>
@@ -9,7 +7,7 @@
     <p class="pt-6 pb-6">
       <div class="box">
         <!--title-->
-        <p class="title is-1 has-text-centered">Profile Set-Up</p>
+        <p class="title is-1 has-text-centered">Profile</p>
       </div>
     </p>
   </head>
@@ -17,25 +15,26 @@
   <!--buttons-->
   <body>
     <!--spacing for buttons-->
-    <p class="pt-6 pb-6">
-        <button class="button is-large is-fullwidth" href="profile.html" target="blank">
-          Name 
-        </button>
-    </p>
-    <p class="pt-6 pb-6">
-      <button class="button is-large is-fullwidth">
-        Profile Picture
-      </button>
-    </p>
-    <p class="pt-6 pb-6">
-      <button class="button is-large is-fullwidth">
-        Age
-      </button>
-    </p>
-    <p class="pt-6 pb-6">
-        <button class="button is-large is-fullwidth">
-          Tracking Preference
-        </button>
+      <p class="pt-6 pb-6">
+        <a button class="button is-large is-fullwidth" href="[[=URL('auth/profile')]]">
+          Edit Profile
+        </a>
       </p>
+      <p class="pt-6 pb-6">
+        <a button class="button is-large is-fullwidth" href="[[=URL('auth/change_password')]]">
+          Change Password
+        </a>
+      </p>
+      <p class="pt-6 pb-6">
+        <a button class="button is-large is-fullwidth" href="[[=URL('auth/logout')]]">
+          Logout 
+        </a>
+      </p>  
   </body>
+  <script src="js/sugar.min.js"></script>
+  <script src="js/axios.min.js"></script>
+  <script src="js/vue.js"></script>
+  <script src="js/utils.js"></script>
+  [[block page_scripts]]<!-- individual pages can add scripts here -->[[end]]
+
 </div>

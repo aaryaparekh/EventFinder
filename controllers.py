@@ -31,6 +31,8 @@ from .common import db, session, T, cache, auth, logger, authenticated, unauthen
 from py4web.utils.form import Form, FormStyleBulma
 from py4web.utils.url_signer import URLSigner
 
+import datetime
+
 url_signer = URLSigner(session)
 
 
@@ -66,12 +68,12 @@ def home_list_events():
 @action("my_events", method=["GET"])
 @action.uses("my_events.html", db, session, url_signer)
 def my_events():
-    # rows = db(db.event.created_by == auth.user_id).select()
-    # events = db(db.event).select()
-    #
-    # return dict(events=events)
     return dict(
         get_events_url = URL('get_events', signer=url_signer),
+        create_event_url = URL('create_event', signer=url_signer),
+        edit_event_url = URL('edit_event', signer=url_signer),
+        delete_event_url = URL('delete_event', signer=url_signer),
+        # url_signer=url_signer,
     )
 
 
@@ -82,34 +84,50 @@ def get_events():
     return dict(events=events, url_signer=url_signer)
 
 
-@action("create_event", method=["GET", "POST"])
-@action.uses("create_event.html", db, session)
+@action("create_event")
+@action.uses(db, session)
 def create_event():
-    form = Form(db.event, csrf_session=session, formstyle=FormStyleBulma)
+    event_name = str(request.params.get('event_name'))
+    event_description = str(request.params.get('event_description'))
+    event_location = str(request.params.get('event_location'))
+    event_start = request.params.get('event_start')
+    event_end = request.params.get('event_end')
 
-    if form.accepted:
-        redirect(URL('create_event'))
+    #convert from miliseconds to datetime
+    event_start = datetime.datetime.fromtimestamp(int(event_start) / 1000.0)
+    event_end = datetime.datetime.fromtimestamp(int(event_end) / 1000.0)
 
-    return dict(form=form)
+    #insert new event into db
+    db.event.insert(event_name=event_name, description=event_description, location=event_location,
+                    event_start=event_start, event_end=event_end)
 
 
-@action("edit_event/<id:int>", method=["GET", "POST"])
-@action.uses("edit_event.html", db, session)
-def edit_event(id=None):
-    if id is None:
-        redirect(URL('my_events'))
+@action("edit_event")
+@action.uses(db, session)
+def edit_event():
+    edit_event_id = request.params.get('edit_event_id')
 
-    event = db.event[id]
+    edit_event_name = str(request.params.get('edit_event_name'))
+    edit_event_description = str(request.params.get('edit_event_description'))
+    edit_event_location = str(request.params.get('edit_event_location'))
+    edit_event_start = request.params.get('edit_event_start')
+    edit_event_end = request.params.get('edit_event_end')
 
-    # assert event.created_by == auth.user_id
+    # convert from miliseconds to datetime
+    edit_event_start = datetime.datetime.fromtimestamp(int(edit_event_start) / 1000.0)
+    edit_event_end = datetime.datetime.fromtimestamp(int(edit_event_end) / 1000.0)
 
-    if event is None:
-        #Nothing found
-        redirect(URL('my_events'))
+    ret = db(db.event.id == edit_event_id).validate_and_update(event_name=edit_event_name,
+                                                          description=edit_event_description,
+                                                          location=edit_event_location,
+                                                          event_start=edit_event_start,
+                                                          event_end=edit_event_end)
 
-    form = Form(db.event, record=id, csrf_session=session, formstyle=FormStyleBulma)
 
-    if form.accepted:
-        redirect(URL('my_events'))
 
-    return dict(form=form)
+@action("delete_event")
+@action.uses(db, session)
+def delete_event():
+    delete_event_id = request.params.get('delete_event_id')
+    del db.event[delete_event_id]
+

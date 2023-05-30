@@ -13,13 +13,18 @@
   </style>
 
 <div class="section" id="vue-target" v-cloak>
-    <div class="columns block is-mobile">
+    <div class="columns is-mobile">
         <div class="column is-two-thirds has-background-grey-light">
             
         </div>
 
         <div class="column">
-            <h1 class="title is-4">Browse Events</h1>
+            <div class="container is-flex is-flex-direction-row is-justify-content-space-between is-align-items-start">
+                <h1 class="title">Browse Events</h1>
+                <button class="button is-primary is-rounded" :class="{'is-outlined': !is_filtered}" @click="toggle_live_events()">
+                    <span>Live Events</span>
+                </button>
+            </div>
             
             <div class="field">
                 <p class="control has-icons-right">
@@ -30,36 +35,34 @@
                 </p>
             </div>
             
-            <div class="container block" style="max-height: 550px; min-height: 550px; overflow-y: auto;">
-                <div class="content is-flex is-flex-direction-column">
-                    <div v-for="e in filtered_events" class="block">
-                        <div class="card has-background-light">
-                            <header class="card-header">
-                                <p class="card-header-title">
-                                {{e.event_name}}
-                                </p>
-                            <button class="card-header-icon" @click="toggle_card_content(e._idx)">
-                                <span class="icon has-text-danger">
-                                    <i :class="{'fa fa-chevron-down': !e.show_content, 'fa fa-chevron-up': e.show_content}"></i>
-                                </span>
-                            </button>
-                            </header>
-                            
-                            <div class="card-content" v-show="e.show_content">
-                                <div class="content">
-                                {{e.description}}
-                                </div>
+            <div class="container block is-flex is-flex-direction-column" style="max-height: 550px; min-height: 550px; overflow-y: auto;">
+                <div v-for="e in filtered_events" class="block">
+                    <div class="card has-background-light">
+                        <header class="card-header">
+                            <p class="card-header-title">
+                            {{e.event_name}}
+                            </p>
+                        <button class="card-header-icon" @click="toggle_card_content(e._idx)">
+                            <span class="icon has-text-danger">
+                                <i :class="{'fa fa-chevron-down': !e.show_content, 'fa fa-chevron-up': e.show_content}"></i>
+                            </span>
+                        </button>
+                        </header>
+                        
+                        <div class="card-content" v-show="e.show_content">
+                            <div class="content">
+                            {{e.description}}
                             </div>
-                            
-                            <footer class="card-footer block">
-                                <div class="tags">
-                                    <span v-if="e.location" class="tag is-link">{{e.location}}</span>
-                                    <span class="tag is-link">{{e.formatted_date}}</span>
-                                    <span class="tag is-link">{{e.formatted_time}}</span>
-                                    <span v-if="e.event_type" class="tag is-warning is-dark">{{e.event_type}}</span>
-                                </div>
-                            </footer>
                         </div>
+                        
+                        <footer class="card-footer block">
+                            <div class="tags">
+                                <span v-if="e.location" class="tag is-link">{{e.location}}</span>
+                                <span class="tag is-link">{{e.formatted_date}}</span>
+                                <span class="tag is-link">{{e.formatted_time}}</span>
+                                <span v-if="e.event_type" class="tag is-warning is-dark">{{e.event_type}}</span>
+                            </div>
+                        </footer>
                     </div>
                 </div>
             </div>

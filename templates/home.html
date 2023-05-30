@@ -66,11 +66,34 @@
 
             <nav class="pagination is-centered" role="navigation">
                 <a class="pagination-previous" :disabled="current_page === 0" @click="current_page !== 0 && set_page(current_page - 1)">Previous</a>
-                <a class="pagination-next" :disabled="current_page === last_page" @click="current_page !== last_page && set_page(current_page + 1)">Next page</a>
-                <ul class="pagination-list">
-                  <li v-for="(page, index) in pages_of_events">
-                    <a class="pagination-link" :class="{ 'is-current': current_page === index }" @click="set_page(index)">{{ index + 1 }}</a>
-                  </li>
+                <a class="pagination-next" :disabled="current_page === last_page" @click="current_page !== last_page && set_page(current_page + 1)">Next</a>
+                <ul v-if="last_page < 5" class="pagination-list">
+                    <li v-for="(page, index) in pages_of_events">
+                        <a class="pagination-link" :class="{ 'is-current': current_page === index }" @click="set_page(index)">{{ index + 1 }}</a>
+                    </li>
+                </ul>
+                <ul v-else class="pagination-list">
+                    <li v-if="current_page > 1">
+                        <a class="pagination-link" @click="set_page(0)">{{ 1 }}</a>
+                    </li>
+                    <li v-if="current_page > 2">
+                        <span class="pagination-ellipsis">&hellip;</span>
+                    </li>
+                    <li v-if="current_page > 0">
+                        <a class="pagination-link" @click="set_page(current_page - 1)">{{ current_page }}</a>
+                    </li>
+                    <li>
+                        <a class="pagination-link is-current" @click="set_page(current_page)">{{ current_page + 1 }}</a>
+                    </li>
+                    <li v-if="current_page < last_page">
+                        <a class="pagination-link" @click="set_page(current_page + 1)">{{ current_page + 2 }}</a>
+                    </li>
+                    <li v-if="current_page < last_page - 2">
+                        <span class="pagination-ellipsis">&hellip;</span>
+                    </li>
+                    <li v-if="current_page < last_page - 1">
+                        <a class="pagination-link" @click="set_page(last_page)">{{ last_page + 1 }}</a>
+                    </li>
                 </ul>
             </nav>
 

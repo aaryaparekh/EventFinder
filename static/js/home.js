@@ -23,56 +23,13 @@ let init = (app) => {
     };
 
     app.set_pages_of_events = () => {
-        const events_per_page = 10    
+        const events_per_page = 6    
         for (var i = 0; i < app.vue.all_events.length; i += events_per_page) {
             var page = app.vue.all_events.slice(i, i + events_per_page);
             app.vue.pages_of_events.push(page);
         }
         app.vue.last_page = app.vue.pages_of_events.length - 1;
     }
-
-    app.set_page = function (page) {
-        app.vue.current_page = page;
-        app.vue.filtered_events = [...app.vue.pages_of_events[app.vue.current_page]];
-        app.sort_events();
-    }
-
-    app.set_filtered_events = () => {
-        app.vue.filtered_events = [...app.vue.pages_of_events[0]];
-    };
-
-    app.search_events = function () {
-        if (app.vue.input_field) {
-            app.vue.filtered_events = app.vue.all_events.filter((event) =>
-                    event.event_name.toLowerCase().includes(app.vue.input_field.toString().toLowerCase())
-            );
-            app.sort_events();
-        } 
-        else {
-            app.set_page(app.vue.current_page);
-        }
-    };
-
-    app.sort_events = function () {
-        app.vue.filtered_events.sort(function(a, b) {
-            const dateA = new Date(a.event_start);
-            const dateB = new Date(b.event_start);
-
-            if (dateA < dateB) {
-              return -1;
-            } else if (dateA > dateB) {
-              return 1;
-            } else {
-              return 0;
-            }
-        });
-        app.enumerate(app.vue.filtered_events);
-    };
-
-    app.clear_search = function () {
-        app.vue.input_field = ''
-        app.set_page(app.vue.current_page)
-    };
 
     app.set_content = (a) => {
         a.map((e) => {
@@ -102,6 +59,45 @@ let init = (app) => {
         return a;
     }
 
+    app.set_page = function (page) {
+        app.vue.current_page = page;
+        app.vue.filtered_events = [...app.vue.pages_of_events[app.vue.current_page]];
+        app.sort_events(app.vue.filtered_events);
+    }
+
+    app.search_events = function () {
+        if (app.vue.input_field) {
+            app.vue.filtered_events = app.vue.all_events.filter((event) =>
+                    event.event_name.toLowerCase().includes(app.vue.input_field.toString().toLowerCase())
+            );
+            app.sort_events(app.vue.filtered_events);
+        } 
+        else {
+            app.set_page(app.vue.current_page);
+        }
+    };
+
+    app.sort_events = function (list) {
+        list.sort(function(a, b) {
+            const dateA = new Date(a.event_start);
+            const dateB = new Date(b.event_start);
+
+            if (dateA < dateB) {
+              return -1;
+            } else if (dateA > dateB) {
+              return 1;
+            } else {
+              return 0;
+            }
+        });
+        app.enumerate(list);
+    };
+
+    app.clear_search = function () {
+        app.vue.input_field = ''
+        app.set_page(app.vue.current_page)
+    };
+
     app.toggle_card_content = (r_idx) => {
         let r = app.vue.filtered_events[r_idx];
         let new_r = r;
@@ -114,7 +110,6 @@ let init = (app) => {
         set_page: app.set_page,
         set_filtered_events: app.set_filtered_events,
         search_events: app.search_events,
-        //reset_page: app.reset_page,
         sort_events: app.sort_events,
         clear_search: app.clear_search,
         toggle_card_content: app.toggle_card_content,
@@ -129,11 +124,11 @@ let init = (app) => {
 
     app.init = () => {
         axios.get(get_home_events_url).then(function (response) {
-            app.vue.all_events = app.enumerate(response.data.all_events);
+            app.vue.all_events = response.data.all_events;
+            app.sort_events(app.vue.all_events);
             app.vue.all_events = app.set_content(response.data.all_events);
             app.set_pages_of_events();
-            app.set_filtered_events();
-            app.sort_events();            
+            app.vue.filtered_events = [...app.vue.pages_of_events[0]];
         });
     };
 

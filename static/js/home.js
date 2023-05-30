@@ -8,6 +8,9 @@ let init = (app) => {
 
     app.data = {
         all_events: [],
+        pages_of_events: [],
+        current_page: 0,
+        last_page: 0,
         filtered_events: [],
         input_field: '',
     };    
@@ -19,15 +22,35 @@ let init = (app) => {
         return a;
     };
 
+    app.set_pages_of_events = () => {
+        const events_per_page = 10    
+        for (var i = 0; i < app.vue.all_events.length; i += events_per_page) {
+            var page = app.vue.all_events.slice(i, i + events_per_page);
+            app.vue.pages_of_events.push(page);
+        }
+        app.vue.last_page = app.vue.pages_of_events.length - 1;
+    }
+
+    app.set_page = function (page) {
+        app.vue.current_page = page;
+        app.vue.filtered_events = [...app.vue.pages_of_events[app.vue.current_page]];
+        app.sort_events();
+    }
+
     app.set_filtered_events = () => {
-        app.vue.filtered_events = [...app.vue.all_events];
+        app.vue.filtered_events = [...app.vue.pages_of_events[0]];
     };
 
     app.search_events = function () {
-        app.vue.filtered_events = app.vue.all_events.filter((event) =>
-                event.event_name.toLowerCase().includes(app.vue.input_field.toString().toLowerCase())
-        );
-        app.sort_events();
+        if (app.vue.input_field) {
+            app.vue.filtered_events = app.vue.all_events.filter((event) =>
+                    event.event_name.toLowerCase().includes(app.vue.input_field.toString().toLowerCase())
+            );
+            app.sort_events();
+        } 
+        else {
+            app.set_page(app.vue.current_page);
+        }
     };
 
     app.sort_events = function () {
@@ -48,7 +71,7 @@ let init = (app) => {
 
     app.clear_search = function () {
         app.vue.input_field = ''
-        app.search_events()
+        app.set_page(app.vue.current_page)
     };
 
     app.set_content = (a) => {
@@ -88,8 +111,10 @@ let init = (app) => {
     }
 
     app.methods = {
+        set_page: app.set_page,
         set_filtered_events: app.set_filtered_events,
         search_events: app.search_events,
+        //reset_page: app.reset_page,
         sort_events: app.sort_events,
         clear_search: app.clear_search,
         toggle_card_content: app.toggle_card_content,
@@ -106,6 +131,7 @@ let init = (app) => {
         axios.get(get_home_events_url).then(function (response) {
             app.vue.all_events = app.enumerate(response.data.all_events);
             app.vue.all_events = app.set_content(response.data.all_events);
+            app.set_pages_of_events();
             app.set_filtered_events();
             app.sort_events();            
         });

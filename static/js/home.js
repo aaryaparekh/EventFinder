@@ -18,7 +18,7 @@ let init = (app) => {
         a.map((e) => {e._idx = k++;});
         return a;
     };
-
+    
     app.set_filtered_events = () => {
         app.vue.filtered_events = [...app.vue.all_events];
     };
@@ -87,18 +87,28 @@ let init = (app) => {
         Vue.set(app.vue.filtered_events, r_idx, new_r);
     }
 
+
     app.methods = {
         set_filtered_events: app.set_filtered_events,
         search_events: app.search_events,
         sort_events: app.sort_events,
         clear_search: app.clear_search,
         toggle_card_content: app.toggle_card_content,
+        async fetch_api_key() {
+            const response = await fetch("../../api_key.env");
+            const text = await response.text();
+            const key = text.split("=")[1].trim();
+            this.api_key = key;
+          },
     };
 
     app.vue = new Vue({
         el: "#vue-target",
         data: app.data,
-        methods: app.methods
+        methods: app.methods,
+        mounted() {
+            this.fetch_api_key();
+        }
     });
 
 

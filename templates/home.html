@@ -19,12 +19,7 @@
         </div>
 
         <div class="column">
-            <div class="container is-flex is-flex-direction-row is-justify-content-space-between is-align-items-start">
-                <h1 class="title">Browse Events</h1>
-                <button class="button is-primary is-rounded" :class="{'is-outlined': !is_filtered}" @click="toggle_live_events()">
-                    <span>Live Events</span>
-                </button>
-            </div>
+            <h1 class="title">Browse Events</h1>
             
             <div class="field">
                 <p class="control has-icons-right">
@@ -34,19 +29,38 @@
                   </span>
                 </p>
             </div>
+
+            <div class="container is-flex is-flex-direction-row is-justify-content-space-between">
+                <button class="button is-primary is-rounded" :class="{'is-outlined': !is_live_filtered}" @click="toggle_live_events()">
+                    <span>Live Events</span>
+                </button>
+                
+                <div class="field">
+                    <div class="control">
+                        <div class="select is-primary is-rounded">
+                            <select v-model="event_type_filter_input" @change="toggle_event_type()">
+                                <option selected value="">Event Type</option>
+                                <option v-for="t in event_type_filter_list" :key="t" :value="t">{{ t }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="button is-primary is-rounded is-outlined" @click="clear_filters()">
+                    <span>Clear Filters</span>
+                </button>
+            </div>
             
             <div class="container block is-flex is-flex-direction-column" style="max-height: 550px; min-height: 550px; overflow-y: auto;">
                 <div v-for="e in filtered_events" class="block">
                     <div class="card has-background-light">
                         <header class="card-header">
-                            <p class="card-header-title">
-                            {{e.event_name}}
-                            </p>
-                        <button class="card-header-icon" @click="toggle_card_content(e._idx)">
-                            <span class="icon has-text-danger">
-                                <i :class="{'fa fa-chevron-down': !e.show_content, 'fa fa-chevron-up': e.show_content}"></i>
+                            <p class="card-header-title">{{e.event_name}}</p>
+                            <span class="card-header-icon is-clickable" @click="toggle_card_content(e._idx)">
+                                <span class="icon has-text-danger">
+                                    <i :class="{'fa fa-chevron-down': !e.show_content, 'fa fa-chevron-up': e.show_content}"></i>
+                                </span>
                             </span>
-                        </button>
                         </header>
                         
                         <div class="card-content" v-show="e.show_content">

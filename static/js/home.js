@@ -10,10 +10,19 @@ let init = (app) => {
         all_events: [],
         pages_of_events: [],
         filtered_events: [],
-        is_filtered: false,
+        curr_save_state: [],
+        is_live_filtered: false,
         current_page: 0,
         last_page: 0,        
         input_field: '',
+        event_type_filter_input: '',
+        event_type_filter_list: 
+        [
+        'Concert', 'Festival', 'Live Music', 'Sports', 'Charity', 'Fundraiser',
+        'Exhibition', 'Theatre', 'Art', 'Family and Kids',
+        'Fashion', 'Food and Drink', 'Comedy', 'Film', 'Outdoors',
+        'Gaming', 'Literary', 'Conference', 'Workshop' 
+        ],
     };    
     
     app.enumerate = (a) => {
@@ -51,20 +60,26 @@ let init = (app) => {
         return a;
     }
 
-    app.set_pages_of_events = function (list) {
-        const events_per_page = 6 
-        app.vue.pages_of_events = [];   
-        for (var i = 0; i < list.length; i += events_per_page) {
-            var page = list.slice(i, i + events_per_page);
-            app.vue.pages_of_events.push(page);
+    app.set_pages_of_events = function () {
+        const events_per_page = 5; 
+        app.vue.pages_of_events = [];
+        if (!app.vue.event_type_filter_input && !app.vue.is_live_filtered) {
+            app.vue.curr_save_state = [...app.vue.all_events];
         }
-        app.vue.last_page = app.vue.pages_of_events.length - 1;
-        app.vue.filtered_events = [...app.vue.pages_of_events[0]];
-        app.enumerate(app.vue.filtered_events);
-    }
 
-    app.reset_filters = function () {
-        app.set_pages_of_events(app.vue.all_events);
+        if (app.vue.curr_save_state.length > 0) {   
+            for (var i = 0; i < app.vue.curr_save_state.length; i += events_per_page) {
+                var page = app.vue.curr_save_state.slice(i, i + events_per_page);
+                app.vue.pages_of_events.push(page);
+            }
+            app.vue.last_page = app.vue.pages_of_events.length - 1;
+            app.vue.filtered_events = [...app.vue.pages_of_events[0]];
+            app.enumerate(app.vue.filtered_events);
+        }
+        else {
+            app.vue.filtered_events = [];
+            app.vue.last_page = app.vue.current_page;
+        }
     }
 
     app.go_to_first_page = function () {
@@ -72,26 +87,56 @@ let init = (app) => {
     }
 
     app.toggle_live_events = function () {
-        if (app.vue.is_filtered) {
-            app.reset_filters();
-        } 
-        else {
-            app.filter_live_events();
+        app.vue.is_live_filtered = !app.vue.is_live_filtered;
+        if (app.vue.event_type_filter_input && !app.vue.is_live_filtered) {
+            app.filter_event_type(app.vue.all_events);
         }
-        app.vue.is_filtered = !app.vue.is_filtered;
+        else {
+            app.filter_live_events(app.vue.curr_save_state);
+        }
+    }
+
+    app.toggle_event_type = function () {
+        if (!app.vue.event_type_filter_input && app.vue.is_live_filtered)  {
+            app.filter_live_events(app.vue.all_events);
+        }
+        else if (app.vue.event_type_filter_input && !app.vue.is_live_filtered) {
+            app.filter_event_type(app.vue.all_events);
+        }
+        else {
+            app.filter_live_events(app.vue.all_events);  
+            app.filter_event_type(app.vue.curr_save_state);       
+        }
+    }
+
+    app.filter_live_events = function (list) {
+        if (app.vue.is_live_filtered) {
+            var currentDateStr = new Date().toLocaleDateString();
+
+            app.vue.curr_save_state = list.filter((e) => {
+                var date = new Date(e.event_start);
+                var dateStr = date.toLocaleDateString();
+                return dateStr === currentDateStr;
+            });
+        }
+        app.set_pages_of_events();
         app.go_to_first_page();
     }
 
-    app.filter_live_events = function () {
-        // Get the current date as a string in YYYY-MM-DD format
-        var currentDateStr = new Date().toISOString().slice(0, 10);
+    app.filter_event_type = function (list) {
+        if (app.vue.event_type_filter_input) {
+            app.vue.curr_save_state = list.filter((e) =>
+                e.event_type === app.vue.event_type_filter_input
+            );
+        }
+        app.set_pages_of_events();
+        app.go_to_first_page();
+    }
 
-        app.vue.filtered_events = app.vue.all_events.filter((e) => {
-            var date = new Date(e.event_start);
-            var dateStr = date.toISOString().slice(0, 10);
-            return dateStr === currentDateStr;
-        });
-        app.set_pages_of_events(app.vue.filtered_events);
+    app.clear_filters = function () {
+        app.vue.event_type_filter_input = "";
+        app.vue.is_live_filtered = false;
+        app.set_pages_of_events();
     }
 
     app.set_page = function (page) {
@@ -102,8 +147,8 @@ let init = (app) => {
 
     app.search_events = function () {
         if (app.vue.input_field) {
-            app.vue.filtered_events = app.vue.all_events.filter((event) =>
-                event.event_name.toLowerCase().includes(app.vue.input_field.toString().toLowerCase())
+            app.vue.filtered_events = app.vue.all_events.filter((e) =>
+                e.event_name.toLowerCase().includes(app.vue.input_field.toString().toLowerCase())
             );
             app.sort_events(app.vue.filtered_events);
         } 
@@ -143,6 +188,8 @@ let init = (app) => {
 
     app.methods = {
         toggle_live_events: app.toggle_live_events,
+        toggle_event_type: app.toggle_event_type,
+        clear_filters: app.clear_filters,
         set_page: app.set_page,
         search_events: app.search_events,
         clear_search: app.clear_search,
@@ -161,7 +208,8 @@ let init = (app) => {
             app.vue.all_events = response.data.all_events;
             app.sort_events(app.vue.all_events);
             app.vue.all_events = app.set_content(response.data.all_events);
-            app.set_pages_of_events(app.vue.all_events);
+            app.set_pages_of_events();
+            app.vue.event_type_filter_list.sort();
         });
     };
 

@@ -29,7 +29,7 @@ let init = (app) => {
         event_type: "",
         edit_event_type: "",
         event_types: ['Concert', 'Festival', 'Live Music', 'Sports', 'Charity', 'Fundraiser',
-        'Exhibition', 'Theatre', 'Art', 'Family and kids',
+        'Exhibition', 'Theatre', 'Art', 'Family and Kids',
         'Fashion', 'Food and Drink', 'Comedy', 'Film', 'Outdoors',
         'Gaming', 'Literary', 'Conference', 'Workshop' 
         ],

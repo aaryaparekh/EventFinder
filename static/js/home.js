@@ -61,7 +61,7 @@ let init = (app) => {
     }
 
     app.set_pages_of_events = function () {
-        const events_per_page = 5; 
+        const events_per_page = 6; 
         app.vue.pages_of_events = [];
         if (!app.vue.event_type_filter_input && !app.vue.is_live_filtered) {
             app.vue.curr_save_state = [...app.vue.all_events];
@@ -73,17 +73,12 @@ let init = (app) => {
                 app.vue.pages_of_events.push(page);
             }
             app.vue.last_page = app.vue.pages_of_events.length - 1;
-            app.vue.filtered_events = [...app.vue.pages_of_events[0]];
-            app.enumerate(app.vue.filtered_events);
+            app.set_page(0);
         }
         else {
             app.vue.filtered_events = [];
             app.vue.last_page = app.vue.current_page;
         }
-    }
-
-    app.go_to_first_page = function () {
-        app.vue.current_page = 0;
     }
 
     app.toggle_live_events = function () {
@@ -120,7 +115,6 @@ let init = (app) => {
             });
         }
         app.set_pages_of_events();
-        app.go_to_first_page();
     }
 
     app.filter_event_type = function (list) {
@@ -130,7 +124,6 @@ let init = (app) => {
             );
         }
         app.set_pages_of_events();
-        app.go_to_first_page();
     }
 
     app.clear_filters = function () {

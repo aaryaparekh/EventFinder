@@ -10,6 +10,7 @@ let init = (app) => {
         all_events: [],
         filtered_events: [],
         input_field: '',
+        api_key: '',
     };    
     
     app.enumerate = (a) => {

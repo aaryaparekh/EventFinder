@@ -37,12 +37,11 @@ url_signer = URLSigner(session)
 
 
 @action("index")
-@action.uses("index.html", auth, T)
+@action.uses("index.html", db, auth, url_signer)
 def index():
-    user = auth.get_user()
-    message = T("Hello {first_name}".format(**user) if user else "Hello")
-    actions = {"allowed_actions": auth.param.allowed_actions}
-    return dict(message=message, actions=actions)
+    return dict(
+        get_home_events_url = URL('home_list_events', signer=url_signer),
+    )
 
 @action("Profile")
 @action.uses("profile.html", auth, T)
@@ -50,12 +49,6 @@ def Profile():
     actions = {"allowed_actions": auth.param.allowed_actions}
     return dict(actions=actions)
 
-@action("Home")
-@action.uses("home.html", db, auth, url_signer)
-def home():
-    return dict(
-        get_home_events_url = URL('home_list_events', signer=url_signer),
-    )
 
 @action("home_list_events")
 @action.uses(db, auth, url_signer.verify())

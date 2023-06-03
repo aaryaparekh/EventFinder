@@ -57,8 +57,8 @@ def home_list_events():
     return dict(all_events=all_events)
 
 #TODO: Add auth to events
-@action("my_events", method=["GET"])
-@action.uses("my_events.html", db, session, url_signer)
+@action("my_events")
+@action.uses("my_events.html", db, session, url_signer, auth.user)
 def my_events(events_created_by=None):
     return dict(
         get_events_url = URL('get_events', signer=url_signer),
@@ -70,14 +70,14 @@ def my_events(events_created_by=None):
 
 
 @action("get_events")
-@action.uses(url_signer.verify(), db)
+@action.uses(url_signer.verify(), db, auth.user)
 def get_events():
-    events = db(db.event).select()
+    events = db(db.event.created_by == auth.user_id).select()
     return dict(events=events, url_signer=url_signer)
 
 
 @action("create_event")
-@action.uses(db, session)
+@action.uses(db, session, auth.user)
 def create_event():
     event_name = str(request.params.get('event_name'))
     event_description = str(request.params.get('event_description'))
@@ -96,7 +96,7 @@ def create_event():
 
 
 @action("edit_event")
-@action.uses(db, session)
+@action.uses(db, session, auth.user)
 def edit_event():
     edit_event_id = request.params.get('edit_event_id')
 
@@ -121,7 +121,7 @@ def edit_event():
 
 
 @action("delete_event")
-@action.uses(db, session)
+@action.uses(db, session, auth.user)
 def delete_event():
     delete_event_id = request.params.get('delete_event_id')
     del db.event[delete_event_id]

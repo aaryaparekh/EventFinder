@@ -1,5 +1,6 @@
 // This will be the object that will contain the Vue attributes
 // and be used to initialize it.
+import * as VueGoogleMaps from 'vue2-google-maps'
 let app = {};
 
 // Given an empty app object, initializes it filling its attributes,
@@ -103,6 +104,13 @@ let init = (app) => {
           },
     };
 
+    Vue.use(VueGoogleMaps, {
+        load: {
+          key: key,
+          libraries: 'places',
+        }
+      });
+    // can also include other libraries: see https://developers.google.com/maps/documentation/javascript/libraries
     app.vue = new Vue({
         el: "#vue-target",
         data: app.data,

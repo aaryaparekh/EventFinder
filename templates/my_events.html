@@ -9,7 +9,7 @@
 <div class="section" id="vue-target" v-cloak>
 <!--    <div>-->
 <!--      EVENTS:-->
-<!--      {{events}}-->
+<!--      {{current_datetime}}-->
 <!--    </div>-->
 
    <div class="container">
@@ -30,6 +30,7 @@
                <div class="box">
                    <div class="field">
                        <label class="label">Event Name</label>
+                       <p class="has-text-danger">{{event_name_error}}</p>
                        <div class="control">
                            <input class="input" v-model="event_name" type="text" placeholder="Event name">
                        </div>
@@ -37,6 +38,7 @@
 
                    <div class="field">
                        <label class="label">Event Location</label>
+                       <p class="has-text-danger">{{event_location_error}}</p>
                        <div class="control">
                            <input class="input" v-model="event_location" type="text" placeholder="Location">
                        </div>
@@ -44,20 +46,23 @@
 
                    <div class="field">
                        <label class="label">Start</label>
+                       <p class="has-text-danger">{{event_start_error}}</p>
                        <div class="control">
-                           <input class="input" v-model="event_start" type="datetime-local">
+                           <input class="input" v-model="event_start" type="datetime-local" id="event_start_input">
                        </div>
                    </div>
 
                    <div class="field">
                        <label class="label">End</label>
+                       <p class="has-text-danger">{{event_end_error}}</p>
                        <div class="control">
-                           <input class="input" v-model="event_end" type="datetime-local">
+                           <input class="input" v-model="event_end" type="datetime-local" id="event_end_input">
                        </div>
                    </div>
 
                    <div class="field">
-                        <label class="label">Type</label>
+                       <label class="label">Type</label>
+                       <p class="has-text-danger">{{event_type_error}}</p>
                         <div class="control">
                             <div class="select">
                                 <select v-model="event_type">
@@ -69,6 +74,7 @@
 
                    <div class="field">
                        <label class="label">Description</label>
+                       <p class="has-text-danger">{{event_description_error}}</p>
                        <div class="control">
                            <textarea class="textarea" v-model="event_description" placeholder="Description"></textarea>
                        </div>
@@ -90,37 +96,42 @@
                <div class="box">
                    <div class="field">
                        <label class="label">Event Name</label>
+                       <p class="has-text-danger">{{event_name_error}}</p>
                        <div class="control">
-                           <input class="input" v-model="edit_event_name" type="text" placeholder="Event name">
+                           <input class="input" v-model="event_name" type="text" placeholder="Event name">
                        </div>
                    </div>
 
                    <div class="field">
                        <label class="label">Event Location</label>
+                       <p class="has-text-danger">{{event_location_error}}</p>
                        <div class="control">
-                           <input class="input" v-model="edit_event_location" type="text" placeholder="Location">
+                           <input class="input" v-model="event_location" type="text" placeholder="Location">
                        </div>
                    </div>
 
                    <div class="field">
                        <label class="label">Start</label>
+                       <p class="has-text-danger">{{event_start_error}}</p>
                        <div class="control">
-                           <input class="input" v-model="edit_event_start" type="datetime-local">
+                           <input class="input" v-model="event_start" type="datetime-local" id="event_edit_start_input">
                        </div>
                    </div>
 
                    <div class="field">
                        <label class="label">End</label>
+                       <p class="has-text-danger">{{event_end_error}}</p>
                        <div class="control">
-                           <input class="input" v-model="edit_event_end" type="datetime-local">
+                           <input class="input" v-model="event_end" type="datetime-local" id="event_edit_end_input">
                        </div>
                    </div>
 
                     <div class="field">
                         <label class="label">Type</label>
+                        <p class="has-text-danger">{{event_type_error}}</p>
                         <div class="control">
                             <div class="select">
-                                <select v-model="edit_event_type">
+                                <select v-model="event_type">
                                     <option v-for="t in event_types" :key="t" :value="t">{{ t }}</option>
                                 </select>
                             </div>
@@ -129,8 +140,9 @@
 
                    <div class="field">
                        <label class="label">Description</label>
+                       <p class="has-text-danger">{{event_description_error}}</p>
                        <div class="control">
-                           <textarea class="textarea" v-model="edit_event_description" placeholder="Description"></textarea>
+                           <textarea class="textarea" v-model="event_description" placeholder="Description"></textarea>
                        </div>
                    </div>
 
@@ -205,6 +217,24 @@
     let create_event_url = "[[=XML(create_event_url)]]";
     let edit_event_url = "[[=XML(edit_event_url)]]";
     let delete_event_url = "[[=XML(delete_event_url)]]";
+    let get_current_datetime_url = "[[=XML(get_current_datetime_url)]]";
+
+    let date = new Date();
+    date.setDate(date.getDate() - 1)  //Set date to yesterday
+
+    let cur_date = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + 'T' + date.getHours() + ":"
+                + date.getMinutes();
+
+    let x = document.getElementById("event_start_input").min = date.toISOString().substring(0, 16);
+    let y = document.getElementById("event_end_input").min = date.toISOString().substring(0, 16);
+
+    let x_ = document.getElementById("event_edit_start_input").min = date.toISOString().substring(0, 16);
+    let y_ = document.getElementById("event_edit_end_input").min = date.toISOString().substring(0, 16);
+
+
+    console.log("Ran script with " + date.toISOString().substring(0, 16));
+    console.log("Current datetime is " + new Date().toLocaleString() );
+
 </script>
 <script src="js/my_events.js"></script>
 [[end]]

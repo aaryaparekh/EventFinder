@@ -17,17 +17,27 @@ let init = (app) => {
         event_end: null,
         event_location: "",
 
-        edit_edit_modal_state: "modal",
-        edit_event_name: "",
-        edit_event_description: "",
+        // edit_edit_modal_state: "modal",
+        // edit_event_name: "",
+        // edit_event_description: "",
         edit_modal_state: "modal",
-        edit_event_start: null,
-        edit_event_end: null,
-        edit_event_location: "",
+        // edit_event_start: null,
+        // edit_event_end: null,
+        // edit_event_location: "",
         edit_event_id: null,
 
+        current_datetime: "",
+
+        //error message variables
+        event_name_error: "",
+        event_location_error: "",
+        event_start_error: "",
+        event_end_error: "",
+        event_type_error: "",
+        event_description_error: "",
+
         event_type: "",
-        edit_event_type: "",
+        // edit_event_type: "",
         event_types: ['Concert', 'Festival', 'Live Music', 'Sports', 'Charity', 'Fundraiser',
         'Exhibition', 'Theatre', 'Art', 'Family and kids',
         'Fashion', 'Food and Drink', 'Comedy', 'Film', 'Outdoors',
@@ -50,42 +60,112 @@ let init = (app) => {
 
     app.add_new_event = function () {
         app.vue.modal_state = "modal is-active";
+
+        app.reset_event_inputs();
     }
 
     app.cancel_add_new_event = function () {
         app.vue.modal_state = "modal";
     }
 
+    app.reset_event_errors = function () {
+        app.vue.event_name_error = "";
+        app.vue.event_location_error = "";
+        app.vue.event_start_error = "";
+        app.vue.event_end_error = "";
+        app.vue.event_type_error = "";
+        app.vue.event_description_error = "";
+    }
+
+    app.reset_event_inputs = function () {
+        app.vue.event_name = "";
+        app.vue.event_description = "";
+        app.vue.event_start = null;
+        app.vue.event_end = null;
+        app.vue.event_location = "";
+    }
+
+    app.check_event_errors = function () {
+        let error = false;
+        // check if input is correct
+        if (app.vue.event_name.length === 0) {
+            app.vue.event_name_error = "Event name cannot be empty.";
+            error = true;
+        } else if (app.vue.event_name.length < 8) {
+            app.vue.event_name_error = "Event name needs to be longer.";
+            error = true;
+        }
+
+        if (app.vue.event_location.length === 0) {
+            app.vue.event_location_error = "Event location cannot be empty.";
+            error = true;
+        } else if (app.vue.event_location.length < 5) {
+            app.vue.event_location_error = "Event location needs to be longer.";
+            error = true;
+        }
+
+        if (app.vue.event_description.length === 0) {
+            app.vue.event_description_error = "Event description cannot be empty.";
+            error = true;
+        } else if (app.vue.event_description.length < 15) {
+            app.vue.event_description_error = "Event description needs to be longer.";
+            error = true;
+        }
+
+        if (app.vue.event_start === null) {
+            app.vue.event_start_error = "Event start date and time cannot be empty.";
+            error = true;
+        }
+
+        if (app.vue.event_end === null) {
+            app.vue.event_end_error = "Event end date and time cannot be empty.";
+            error = true;
+        }
+
+        if (app.vue.event_start !== null && app.vue.event_end !== null && app.vue.event_start >= app.vue.event_end) {
+            app.vue.event_end_error = "Event end must be after event starts.";
+            error = true;
+        }
+
+        return error;
+    }
+
     app.create_event = function () {
-        axios.get(create_event_url,
-            {params: {event_name: app.vue.event_name,
-                    event_description:app.vue.event_description,
-                    event_start:Date.parse(app.vue.event_start),
-                    event_end:Date.parse(app.vue.event_end),
-                    event_location: app.vue.event_location,
-                    event_type: app.vue.event_type,
-                }}
-        ).then(function (response) {
-            //TODO: Check if form value is correct, else keep modal active and send error message
-            app.vue.modal_state = "modal"
+        app.reset_event_errors();
 
-            axios.get(get_events_url).then(function (response) {
-                app.vue.events = app.enumerate(response.data.events)
+        let error = app.check_event_errors();
+
+        if (!error) {
+            axios.get(create_event_url,
+                {params: {event_name: app.vue.event_name,
+                        event_description:app.vue.event_description,
+                        event_start:Date.parse(app.vue.event_start),
+                        event_end:Date.parse(app.vue.event_end),
+                        event_location: app.vue.event_location,
+                        event_type: app.vue.event_type,
+                    }}
+            ).then(function (response) {
+                //TODO: Check if form value is correct, else keep modal active and send error message
+                app.vue.modal_state = "modal"
+
+                axios.get(get_events_url).then(function (response) {
+                    app.vue.events = app.enumerate(response.data.events)
+                });
+
             });
-
-        });
+        }
     }
 
     app.edit_event = function (event_id) {
         for (let i = 0; i < app.vue.events.length; i++) {
             if (app.vue.events[i].id === event_id) {
-                app.vue.edit_event_name = app.vue.events[i].event_name;
-                app.vue.edit_event_description = app.vue.events[i].description;
-                app.vue.edit_event_start = app.vue.events[i].event_start;
-                app.vue.edit_event_end = app.vue.events[i].event_end;
-                app.vue.edit_event_location = app.vue.events[i].location;
-                app.vue.edit_event_type = app.vue.events[i].event_type;
-                app.vue.edit_event_id = event_id;
+                app.vue.event_name = app.vue.events[i].event_name;
+                app.vue.event_description = app.vue.events[i].description;
+                app.vue.event_start = app.vue.events[i].event_start;
+                app.vue.event_end = app.vue.events[i].event_end;
+                app.vue.event_location = app.vue.events[i].location;
+                app.vue.event_type = app.vue.events[i].event_type;
+                app.vue.event_id = event_id;
                 break;
             }
         }
@@ -97,27 +177,35 @@ let init = (app) => {
     }
 
     app.edit_event_publish = function () {
-        axios.get(edit_event_url,
-            {params: {edit_event_name: app.vue.edit_event_name,
-                    edit_event_description:app.vue.edit_event_description,
-                    edit_event_start:Date.parse(app.vue.edit_event_start),
-                    edit_event_end:Date.parse(app.vue.edit_event_end),
-                    edit_event_location: app.vue.edit_event_location,
-                    edit_event_type: app.vue.edit_event_type,
-                    edit_event_id: app.vue.edit_event_id,}}
-        ).then(function (response) {
-            //TODO: Check if form value is correct, else keep modal active and send error message
-            app.vue.edit_modal_state = "modal"
 
-            axios.get(get_events_url).then(function (response) {
-                app.vue.events = app.enumerate(response.data.events)
+        app.reset_event_errors();
+
+        let error = app.check_event_errors();
+
+        if (!error) {
+            axios.get(edit_event_url,
+                {params: {edit_event_name: app.vue.event_name,
+                        edit_event_description:app.vue.event_description,
+                        edit_event_start:Date.parse(app.vue.event_start),
+                        edit_event_end:Date.parse(app.vue.event_end),
+                        edit_event_location: app.vue.event_location,
+                        edit_event_type: app.vue.event_type,
+                        edit_event_id: app.vue.event_id,}}
+            ).then(function (response) {
+                //TODO: Check if form value is correct, else keep modal active and send error message
+                app.vue.edit_modal_state = "modal"
+
+                axios.get(get_events_url).then(function (response) {
+                    app.vue.events = app.enumerate(response.data.events)
+                });
+
             });
 
-        });
+        }
     }
 
     app.delete_event = function () {
-        axios.get(delete_event_url, {params: {delete_event_id: app.vue.edit_event_id}}).then(function (response) {
+        axios.get(delete_event_url, {params: {delete_event_id: app.vue.event_id}}).then(function (response) {
             app.vue.edit_modal_state = "modal"
 
             axios.get(get_events_url).then(function (response) {
@@ -151,6 +239,25 @@ let init = (app) => {
     app.init = () => {
         // Put here any initialization code.
         app.get_events();
+
+        axios.get(get_current_datetime_url).then(function (response) {
+            // console.log(response.data.current_datetime)
+
+            // var currentDate = new Date();
+            // var datetime = "Last Sync: " + currentDate.getDay() + "/" + currentDate.getMonth()
+            // + "/" + currentDate.getFullYear() + " @ "
+            // + currentDate.getHours() + ":" + currentDate.getMinutes() + ":" + currentDate.getSeconds();
+            // console.log(datetime)
+            let date = new Date();
+            let cur_date = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + 'T' + date.getHours() + ":"
+                + date.getMinutes();
+            console.log(new Date().toString())
+            console.log(date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + 'T' + date.getHours() + ":"
+                + date.getMinutes());
+
+            // app.vue.current_datetime = response.data.current_datetime
+            // app.vue.current_datetime = Date().getTime()
+        });
     };
 
     // Call to the initializer.

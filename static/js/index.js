@@ -1,5 +1,6 @@
 // This will be the object that will contain the Vue attributes
 // and be used to initialize it.
+import * as VueGoogleMaps from 'vue2-google-maps'
 let app = {};
 
 // Given an empty app object, initializes it filling its attributes,
@@ -23,6 +24,7 @@ let init = (app) => {
         'Fashion', 'Food and Drink', 'Comedy', 'Film', 'Outdoors',
         'Gaming', 'Literary', 'Conference', 'Workshop' 
         ],
+        api_key:'',
     };    
     
     app.enumerate = (a) => {
@@ -187,12 +189,29 @@ let init = (app) => {
         search_events: app.search_events,
         clear_search: app.clear_search,
         toggle_card_content: app.toggle_card_content,
+        async fetch_api_key() {
+            const response = await fetch("../../api_key.env");
+            const text = await response.text();
+            const key = text.split("=")[1].trim();
+            this.api_key = key;
+          },
     };
+
+    Vue.use(VueGoogleMaps, {
+        load: {
+          key: api_key,
+          libraries: 'places',
+        }
+      });
+    // can also include other libraries: see https://developers.google.com/maps/documentation/javascript/libraries
 
     app.vue = new Vue({
         el: "#vue-target",
         data: app.data,
-        methods: app.methods
+        methods: app.methods,
+        mounted() {
+            this.fetch_api_key();
+        }
     });
 
 

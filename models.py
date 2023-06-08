@@ -41,4 +41,7 @@ db.event.creation_timestamp.writable = False
 db.event.image_filepath.readable = False
 db.event.image_filepath.writable = False
 
+db.auth_user.id.readable = False
+db.auth_user.id.writable = False
+
 db.commit()

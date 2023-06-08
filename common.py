@@ -93,8 +93,8 @@ auth_button_classes = {
     "lost-password": "button is-danger is-light",
     "register": "button is-info is-light",
     "request": "button is-primary",
-    "sign-in": "button is-primary",
-    "sign-up": "button is-success",
+    "sign-in": "button is-primary mx-3",
+    "sign-up": "button is-success mx-3",
     "submit": "button is-primary",
 }
 

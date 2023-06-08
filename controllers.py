@@ -65,6 +65,7 @@ def my_events(events_created_by=None):
         create_event_url = URL('create_event', signer=url_signer),
         edit_event_url = URL('edit_event', signer=url_signer),
         delete_event_url = URL('delete_event', signer=url_signer),
+        get_current_datetime_url = URL('get_current_datetime')
         # url_signer=url_signer,
     )
 
@@ -119,10 +120,17 @@ def edit_event():
                                                           event_type=edit_event_type)
 
 
-
 @action("delete_event")
 @action.uses(db, session, auth.user)
 def delete_event():
     delete_event_id = request.params.get('delete_event_id')
     del db.event[delete_event_id]
+
+
+@action('get_current_datetime')
+@action.uses(session)
+def get_current_datetime():
+    print('Python output: ', datetime.datetime.now())
+
+    return dict(get_current_datetime=datetime.datetime.now().timestamp())
 

@@ -179,6 +179,11 @@ let init = (app) => {
         Vue.set(app.vue.filtered_events, r_idx, new_r);
     }
 
+    app.load_maps_url = function () {
+        const apiKey = process.env.api_key;
+        return `https://maps.googleapis.com/maps/api/staticmap?center=Santa+Cruz,CA&zoom=13&size=1600x900&maptype=roadmap&key=${apiKey}`;
+    };
+
     app.methods = {
         toggle_live_events: app.toggle_live_events,
         toggle_event_type: app.toggle_event_type,
@@ -187,6 +192,7 @@ let init = (app) => {
         search_events: app.search_events,
         clear_search: app.clear_search,
         toggle_card_content: app.toggle_card_content,
+        load_maps_url: app.load_maps_url,
     };
 
     app.vue = new Vue({

@@ -29,8 +29,10 @@ db.define_table(
     Field('location', type='string', requires=IS_NOT_EMPTY()),
     Field('description', type='text', requires=IS_NOT_EMPTY()),
     Field('image_filepath', type='string'),
-    Field('event_type', requires=IS_NOT_EMPTY()),
+    Field('event_type', default=''),
 )
+#
+# db(db.event).delete()
 
 db.event.id.readable = False
 db.event.id.writable = False

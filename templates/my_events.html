@@ -222,8 +222,8 @@
     let date = new Date();
     date.setDate(date.getDate() - 1)  //Set date to yesterday
 
-    let cur_date = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + 'T' + date.getHours() + ":"
-                + date.getMinutes();
+    // let cur_date = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + 'T' + date.getHours() + ":"
+    //             + date.getMinutes();
 
     let x = document.getElementById("event_start_input").min = date.toISOString().substring(0, 16);
     let y = document.getElementById("event_end_input").min = date.toISOString().substring(0, 16);

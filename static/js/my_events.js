@@ -6,6 +6,10 @@ let app = {};
 // creates a Vue instance, and then initializes the Vue instance.
 let init = (app) => {
 
+    let EVENT_NAME_MIN = 3;
+    let EVENT_DESCRIPTION_MIN = 15;
+    let EVENT_LOCATION_MIN = 3;
+
     // This is the Vue data.
     app.data = {
         // Complete as you see fit.
@@ -17,13 +21,7 @@ let init = (app) => {
         event_end: null,
         event_location: "",
 
-        // edit_edit_modal_state: "modal",
-        // edit_event_name: "",
-        // edit_event_description: "",
         edit_modal_state: "modal",
-        // edit_event_start: null,
-        // edit_event_end: null,
-        // edit_event_location: "",
         edit_event_id: null,
 
         current_datetime: "",
@@ -54,7 +52,7 @@ let init = (app) => {
 
     app.get_events = function () {
         axios.get(get_events_url).then(function (response) {
-            app.vue.events = app.enumerate(response.data.events);
+            app.vue.events = response.data.events;
         });
     }
 
@@ -91,7 +89,7 @@ let init = (app) => {
         if (app.vue.event_name.length === 0) {
             app.vue.event_name_error = "Event name cannot be empty.";
             error = true;
-        } else if (app.vue.event_name.length < 8) {
+        } else if (app.vue.event_name.length < EVENT_NAME_MIN) {
             app.vue.event_name_error = "Event name needs to be longer.";
             error = true;
         }
@@ -99,7 +97,7 @@ let init = (app) => {
         if (app.vue.event_location.length === 0) {
             app.vue.event_location_error = "Event location cannot be empty.";
             error = true;
-        } else if (app.vue.event_location.length < 5) {
+        } else if (app.vue.event_location.length < EVENT_LOCATION_MIN) {
             app.vue.event_location_error = "Event location needs to be longer.";
             error = true;
         }
@@ -107,7 +105,7 @@ let init = (app) => {
         if (app.vue.event_description.length === 0) {
             app.vue.event_description_error = "Event description cannot be empty.";
             error = true;
-        } else if (app.vue.event_description.length < 15) {
+        } else if (app.vue.event_description.length < EVENT_DESCRIPTION_MIN) {
             app.vue.event_description_error = "Event description needs to be longer.";
             error = true;
         }
@@ -122,7 +120,10 @@ let init = (app) => {
             error = true;
         }
 
-        if (app.vue.event_start !== null && app.vue.event_end !== null && app.vue.event_start >= app.vue.event_end) {
+        console.log("START = " + app.vue.event_start);
+        console.log("END = " + app.vue.event_end);
+
+        if (app.vue.event_start !== null && app.vue.event_end !== null && Date.parse(app.vue.event_start) >= Date.parse(app.vue.event_end)) {
             app.vue.event_end_error = "Event end must be after event starts.";
             error = true;
         }
@@ -134,6 +135,13 @@ let init = (app) => {
         app.reset_event_errors();
 
         let error = app.check_event_errors();
+
+        console.log("In create event:");
+        console.log("app.vue.event_start = " + String(app.vue.event_start));
+        console.log("app.vue.event_end = " + String(app.vue.event_end));
+        console.log("types = ", typeof app.vue.event_start);
+
+        // console.log("Giving: " + Date.parse(app.vue.event_start) + " and " + Date.parse(app.vue.event_end))
 
         if (!error) {
             axios.get(create_event_url,
@@ -148,10 +156,7 @@ let init = (app) => {
                 //TODO: Check if form value is correct, else keep modal active and send error message
                 app.vue.modal_state = "modal"
 
-                axios.get(get_events_url).then(function (response) {
-                    app.vue.events = app.enumerate(response.data.events)
-                });
-
+                app.get_events();
             });
         }
     }
@@ -166,6 +171,14 @@ let init = (app) => {
                 app.vue.event_location = app.vue.events[i].location;
                 app.vue.event_type = app.vue.events[i].event_type;
                 app.vue.event_id = event_id;
+
+                console.log("In edit_event: ");
+                console.log("app.vue.event_start = " + app.vue.event_start);
+                console.log("app.vue.event_end = " + app.vue.event_end);
+
+                console.log("Attempting conversion...");
+                console.log("app.vue.event_start = " +  new Date(app.vue.event_start));
+
                 break;
             }
         }
@@ -183,6 +196,10 @@ let init = (app) => {
         let error = app.check_event_errors();
 
         if (!error) {
+
+            console.log("In edit event publish:");
+            console.log("app.vue.event_start = " + String(app.vue.event_start));
+            console.log("app.vue.event_end = " + String(app.vue.event_end));
             axios.get(edit_event_url,
                 {params: {edit_event_name: app.vue.event_name,
                         edit_event_description:app.vue.event_description,
@@ -195,9 +212,7 @@ let init = (app) => {
                 //TODO: Check if form value is correct, else keep modal active and send error message
                 app.vue.edit_modal_state = "modal"
 
-                axios.get(get_events_url).then(function (response) {
-                    app.vue.events = app.enumerate(response.data.events)
-                });
+                app.get_events();
 
             });
 
@@ -208,9 +223,7 @@ let init = (app) => {
         axios.get(delete_event_url, {params: {delete_event_id: app.vue.event_id}}).then(function (response) {
             app.vue.edit_modal_state = "modal"
 
-            axios.get(get_events_url).then(function (response) {
-                app.vue.events = app.enumerate(response.data.events)
-            });
+            app.get_events();
         });
     }
 
@@ -248,12 +261,13 @@ let init = (app) => {
             // + "/" + currentDate.getFullYear() + " @ "
             // + currentDate.getHours() + ":" + currentDate.getMinutes() + ":" + currentDate.getSeconds();
             // console.log(datetime)
-            let date = new Date();
-            let cur_date = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + 'T' + date.getHours() + ":"
-                + date.getMinutes();
-            console.log(new Date().toString())
-            console.log(date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + 'T' + date.getHours() + ":"
-                + date.getMinutes());
+
+            // let date = new Date();
+            // let cur_date = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + 'T' + date.getHours() + ":"
+            //     + date.getMinutes();
+            // console.log(new Date().toString())
+            // console.log(date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + 'T' + date.getHours() + ":"
+            //     + date.getMinutes());
 
             // app.vue.current_datetime = response.data.current_datetime
             // app.vue.current_datetime = Date().getTime()

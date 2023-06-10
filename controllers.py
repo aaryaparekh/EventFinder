@@ -87,6 +87,12 @@ def create_event():
     event_end = request.params.get('event_end')
     event_type = request.params.get('event_type')
 
+    print("Creating EVENT -------------")
+    print("")
+    print("event_start", event_start)
+    print("event_end", event_end)
+    print("types = ", type(event_start), type(event_end))
+
     #convert from miliseconds to datetime
     event_start = datetime.datetime.fromtimestamp(int(event_start) / 1000.0)
     event_end = datetime.datetime.fromtimestamp(int(event_end) / 1000.0)
@@ -108,16 +114,28 @@ def edit_event():
     edit_event_end = request.params.get('edit_event_end')
     edit_event_type = request.params.get('edit_event_type')
 
+    print("EDITING EVENT -------------")
+    print("")
+    print("edit_event_id", edit_event_id)
+    print("edit_event_start", edit_event_start)
+    print("edit_event_end", edit_event_end)
+    print("edit_event_type: ", type(edit_event_type))
+
     # convert from miliseconds to datetime
     edit_event_start = datetime.datetime.fromtimestamp(int(edit_event_start) / 1000.0)
     edit_event_end = datetime.datetime.fromtimestamp(int(edit_event_end) / 1000.0)
 
+    print("edit_event_start", edit_event_start)
+    print("edit_event_end", edit_event_end)
+
     ret = db(db.event.id == edit_event_id).validate_and_update(event_name=edit_event_name,
-                                                          description=edit_event_description,
-                                                          location=edit_event_location,
-                                                          event_start=edit_event_start,
-                                                          event_end=edit_event_end,
-                                                          event_type=edit_event_type)
+                                                               description=edit_event_description,
+                                                               location=edit_event_location,
+                                                               event_start=edit_event_start,
+                                                               event_end=edit_event_end,
+                                                               event_type=edit_event_type)
+    print("-------")
+    print("RETURN: ", ret)
 
 
 @action("delete_event")

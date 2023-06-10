@@ -53,6 +53,16 @@ let init = (app) => {
     app.get_events = function () {
         axios.get(get_events_url).then(function (response) {
             app.vue.events = response.data.events;
+
+            // Add formatted date and time to each event for display in html
+            for (let i = 0; i < app.vue.events.length; i++) {
+                let e = app.vue.events[i];
+                let start = new Date(app.vue.events[i].event_start).toLocaleString();
+                let end = new Date(app.vue.events[i].event_end).toLocaleString();
+                app.vue.events[i].start_formatted = start;
+                app.vue.events[i].end_formatted = end;
+
+            }
         });
     }
 
@@ -84,6 +94,8 @@ let init = (app) => {
     }
 
     app.check_event_errors = function () {
+        app.reset_event_errors();
+
         let error = false;
         // check if input is correct
         if (app.vue.event_name.length === 0) {
@@ -132,8 +144,6 @@ let init = (app) => {
     }
 
     app.create_event = function () {
-        app.reset_event_errors();
-
         let error = app.check_event_errors();
 
         console.log("In create event:");
@@ -162,6 +172,8 @@ let init = (app) => {
     }
 
     app.edit_event = function (event_id) {
+        app.reset_event_errors();
+
         for (let i = 0; i < app.vue.events.length; i++) {
             if (app.vue.events[i].id === event_id) {
                 app.vue.event_name = app.vue.events[i].event_name;
@@ -187,12 +199,10 @@ let init = (app) => {
 
     app.cancel_edit_event = function () {
         app.vue.edit_modal_state = "modal";
+        app.reset_event_errors();
     }
 
     app.edit_event_publish = function () {
-
-        app.reset_event_errors();
-
         let error = app.check_event_errors();
 
         if (!error) {

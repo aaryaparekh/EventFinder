@@ -19,18 +19,18 @@
           </div>
           <div class="button is-large is-centered is-dark is-fullwidth">
             [[if globals().get('user'):]]
-              <a class="button is-large is-success is-fullwidth is-outlined" href="[[=URL('Profile')]]">
+              <a class="button is-large is-dark is-fullwidth" href="[[=URL('Profile')]]">
                 Profile
               </a>
             [[else:]]
-              <a class="button is-large is-success is-fullwidth is-outlined" href="[[=URL('auth/login')]]">
+              <a class="button is-large is-dark is-fullwidth" href="[[=URL('auth/login')]]">
                 Profile
               </a>
             [[pass]]
-              <a class="button is-large is-success is-fullwidth is-outlined" href="[[=URL('index')]]">
+              <a class="button is-large is-dark is-fullwidth" href="[[=URL('index')]]">
                 Home
               </a>
-              <a class="button is-large is-success is-fullwidth is-outlined" href="[[=URL('my_events')]]">
+              <a class="button is-large is-dark is-fullwidth" href="[[=URL('my_events')]]">
                 My Events
               </a>  
           </div>
@@ -42,7 +42,7 @@
                     <a class="navbar-link is-primary">
                       [[=globals().get('user').get('username')]]
                     </a>
-                    <div class="navbar-dropdown">
+                    <div class="navbar-dropdown is-right">
                       <a class="navbar-item" href="[[=URL('auth/logout')]]">Logout</a>
                       <a class="navbar-item" href="[[=URL('auth/profile')]]">Profile</a>
                       <a class="navbar-item" href="[[=URL('auth/change_password')]]">Change Password</a></li>

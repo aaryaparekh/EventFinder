@@ -1,5 +1,10 @@
 [[extend 'layout.html']]
 
+<script>
+    const mapsUrl = app.load_maps_url();
+    document.write(`<script src="${mapsUrl}" async defer><\/script>`);
+</script>
+
 <style> 
     [v-cloak] {
         display: none;
@@ -15,9 +20,7 @@
 <div class="section" id="vue-target" v-cloak>
     <div class="columns is-mobile">
         <div class="column is-two-thirds has-background-grey-light">
-            <figure class="image">
-                <img src="load_maps_url()" alt="Google Map of Santa Cruz">
-              </figure>
+            <div id="map"></div>
         </div>
 
         <div class="column">

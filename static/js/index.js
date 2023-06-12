@@ -179,6 +179,14 @@ let init = (app) => {
         Vue.set(app.vue.filtered_events, r_idx, new_r);
     }
 
+    app.initMap = async function () {
+        const { Map } = await google.maps.importLibrary("maps");
+        this.vue.map = new Map(document.getElementById("map"), {
+            center: { lat: -34.397, lng: 150.644 },
+            zoom: 8,
+        });
+    }
+    window.initMap = app.initMap;
     app.methods = {
         toggle_live_events: app.toggle_live_events,
         toggle_event_type: app.toggle_event_type,
@@ -187,6 +195,7 @@ let init = (app) => {
         search_events: app.search_events,
         clear_search: app.clear_search,
         toggle_card_content: app.toggle_card_content,
+        initMap: app.initMap,
     };
 
     app.vue = new Vue({
@@ -203,7 +212,8 @@ let init = (app) => {
             app.vue.all_events = app.set_content(response.data.all_events);
             app.set_pages_of_events();
             app.vue.event_type_filter_list.sort();
-        });
+            app.initMap();
+        }.bind(app));
     };
 
     app.init();

@@ -182,8 +182,8 @@ let init = (app) => {
     app.initMap = async function () {
         const { Map } = await google.maps.importLibrary("maps");
         this.vue.map = new Map(document.getElementById("map"), {
-            center: { lat: -34.397, lng: 150.644 },
-            zoom: 8,
+            center: { lat: 36.974, lng: -122.030 },
+            zoom: 13,
         });
     }
     window.initMap = app.initMap;

@@ -10,12 +10,26 @@
     .card .card-header {
       box-shadow: none;
     }
+    #map {
+    height: 750px;
+    }
   </style>
+
+<head>
+    <!-- ... other head elements ... -->
+    <script src="js/config.js"></script>
+    <script>
+        let script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${config.api_key}&callback=initMap`;
+        script.async = true;
+        document.head.appendChild(script);
+    </script>
+  </head>
 
 <div class="section" id="vue-target" v-cloak>
     <div class="columns is-mobile">
         <div class="column is-two-thirds has-background-grey-light">
-            
+            <div id="map"></div>
         </div>
 
         <div class="column">

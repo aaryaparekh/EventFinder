@@ -17,7 +17,13 @@
 
 <head>
     <!-- ... other head elements ... -->
-    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3MzlM-YFY63HO6Parc-y3EfAr-jE5ccQ&callback=initMap"></script>
+    <script src="js/config.js"></script>
+    <script>
+        let script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${config.api_key}&callback=initMap`;
+        script.async = true;
+        document.head.appendChild(script);
+    </script>
   </head>
 
 <div class="section" id="vue-target" v-cloak>

@@ -187,6 +187,7 @@ let init = (app) => {
         });
     }
     window.initMap = app.initMap;
+
     app.methods = {
         toggle_live_events: app.toggle_live_events,
         toggle_event_type: app.toggle_event_type,

@@ -35,7 +35,24 @@
               </a>  
           </div>
           <div class="navbar-end">
+            
+            [[if globals().get('user'):]]
             <div class="navbar-item">
+              <p>[[=globals().get('user').get('email')]]</p>
+            </div>
+            [[pass]]
+            <div class="navbar-item">
+              <div class="buttons">
+                [[if globals().get('user'):]]
+                <a class="button is-light" href="[[=URL('auth/logout')]]">Sign out</a>
+                [[else:]]
+                <a class="button is-link" href="[[=URL('auth/plugin/oauth2google/login', vars=dict(next=URL('index')))]]">Sign In</a>
+                [[pass]]
+              </div>
+            </div>
+            
+            
+            <!-- <div class="navbar-item">
               <div class="buttons">
                 [[if globals().get('user'):]]
                   <div class="navbar-item has-dropdown is-hoverable">
@@ -53,7 +70,7 @@
                   <a class="button is-success" href="[[=URL('auth/login')]]">Log in</a>
                 [[pass]]
               </div>
-            </div>
+            </div> -->
           </div>
         </p>
       </div>

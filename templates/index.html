@@ -45,13 +45,13 @@
             </div>
 
             <div class="container is-flex is-flex-direction-row is-justify-content-space-between">
-                <button class="button is-primary is-rounded" :class="{'is-outlined': !is_live_filtered}" @click="toggle_live_events()">
+                <button class="button is-link is-rounded" :class="{'is-outlined': !is_live_filtered}" @click="toggle_live_events()">
                     <span>Live Events</span>
                 </button>
                 
                 <div class="field">
                     <div class="control">
-                        <div class="select is-primary is-rounded">
+                        <div class="select is-warning is-rounded">
                             <select v-model="event_type_filter_input" @change="toggle_event_type()">
                                 <option selected value="">Event Type</option>
                                 <option v-for="t in event_type_filter_list" :key="t" :value="t">{{ t }}</option>
@@ -60,7 +60,7 @@
                     </div>
                 </div>
 
-                <button class="button is-primary is-rounded is-outlined" @click="clear_filters()">
+                <button class="button is-link is-rounded is-outlined" @click="clear_filters()">
                     <span>Clear Filters</span>
                 </button>
             </div>

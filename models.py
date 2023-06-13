@@ -31,8 +31,6 @@ db.define_table(
     Field('image_filepath', type='string'),
     Field('event_type', default=''),
 )
-#
-# db(db.event).delete()
 
 db.event.id.readable = False
 db.event.id.writable = False

@@ -102,6 +102,6 @@ CELERY_BROKER = "redis://localhost:6379/0"
 
 # try import private settings
 try:
-    from .settings_private import *
+    from .private.secret_settings import *
 except (ImportError, ModuleNotFoundError):
     pass

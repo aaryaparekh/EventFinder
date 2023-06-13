@@ -40,7 +40,7 @@ url_signer = URLSigner(session)
 @action.uses("index.html", db, auth, url_signer)
 def index():
     return dict(
-        get_home_events_url = URL('home_list_events', signer=url_signer),
+        get_home_events_url = URL('home_list_events'),
     )
 
 @action("Profile")
@@ -51,34 +51,33 @@ def Profile():
 
 
 @action("home_list_events")
-@action.uses(db, auth, url_signer.verify())
+@action.uses(db, auth)
 def home_list_events():
     all_events = db(db.event).select()
     return dict(all_events=all_events)
 
 #TODO: Add auth to events
 @action("my_events")
-@action.uses("my_events.html", db, session, url_signer, auth.user)
+@action.uses("my_events.html", db, session)
 def my_events(events_created_by=None):
     return dict(
-        get_events_url = URL('get_events', signer=url_signer),
-        create_event_url = URL('create_event', signer=url_signer),
-        edit_event_url = URL('edit_event', signer=url_signer),
-        delete_event_url = URL('delete_event', signer=url_signer),
+        get_events_url = URL('get_events'),
+        create_event_url = URL('create_event'),
+        edit_event_url = URL('edit_event'),
+        delete_event_url = URL('delete_event'),
         get_current_datetime_url = URL('get_current_datetime')
-        # url_signer=url_signer,
     )
 
 
 @action("get_events")
-@action.uses(url_signer.verify(), db, auth.user)
+@action.uses(db)
 def get_events():
-    events = db(db.event.created_by == auth.user_id).select()
-    return dict(events=events, url_signer=url_signer)
+    events = db(db.event).select()
+    return dict(events=events)
 
 
 @action("create_event")
-@action.uses(db, session, auth.user)
+@action.uses(db, session)
 def create_event():
     event_name = str(request.params.get('event_name'))
     event_description = str(request.params.get('event_description'))

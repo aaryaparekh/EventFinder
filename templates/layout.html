@@ -15,7 +15,11 @@
       <p class="pl-6 pb-6">
         <div id="the-navbar-menu" class="navbar-menu">
           <div class="navbar-start">
-            [[block page_menu_items]]<!-- individual pages can add menu items here -->[[end]]
+            [[block page_menu_items]]<!-- individual pages can add menu items here -->
+            <div class="container is-flex is-align-items-center">
+              <h1 style="font-family: Optima, sans-serif;" class="is-size-3 has-text-weight-semibold">EventFinder</h1>
+            </div>
+            [[end]]
           </div>
           <div class="button is-large is-centered is-dark is-fullwidth">
             [[if globals().get('user'):]]

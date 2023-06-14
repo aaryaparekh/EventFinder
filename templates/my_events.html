@@ -16,7 +16,7 @@
 
       <h1 class="title ">Your Events</h1>
 
-       <a class="button is-primary" @click="add_new_event">
+       <a class="button is-link" @click="add_new_event">
            <span class="icon"><i class = "fa fa-plus"></i></span>
            <span>Add New Event</span>
        </a>
@@ -80,7 +80,7 @@
                        </div>
                    </div>
 
-                   <button class="button is-primary" @click="create_event">Publish Event</button>
+                   <button class="button is-link" @click="create_event">Publish Event</button>
                    <button class="button is-danger" @click="cancel_add_new_event">Cancel</button>
                </div>
            </div>
@@ -146,7 +146,7 @@
                        </div>
                    </div>
 
-                   <button class="button is-primary" @click="edit_event_publish">Publish Changes</button>
+                   <button class="button is-link" @click="edit_event_publish">Publish Changes</button>
                    <button class="button is-danger" @click="cancel_edit_event">Cancel</button>
                    <button class="button is-warning is-right" @click="delete_event">
                        <span class="icon"><i class = "fa fa-trash"></i></span>
@@ -175,40 +175,6 @@
                <p>{{e.description}}</p>
            </div>
        </div>
-
-
-<!--      <table class="table is-striped is-fullwidth">-->
-<!--         <tr>-->
-<!--             <th>Event Name</th>-->
-<!--             <th>Start Time</th>-->
-<!--             <th>End Time</th>-->
-<!--             <th>Location</th>-->
-<!--             <th></th>-->
-<!--             <th></th>-->
-<!--         </tr>-->
-
-<!--         <tr v-for="e in events">-->
-<!--             <td>{{e.event_name}}</td>-->
-<!--             <td>{{e.event_start}}</td>-->
-<!--             <td>{{e.event_end}}</td>-->
-<!--             <td>{{e.location}}</td>-->
-
-<!--             <td>-->
-<!--                 <a class="button is-warning" href="[[=edit_event_url]]">-->
-<!--                     <i class="fa fa-fw fa-pencil"></i>-->
-<!--                 </a>-->
-
-<!--             </td>-->
-
-<!--             <td>-->
-<!--                 <a class="button is-danger" href="delete">-->
-<!--                     <i class="fa fa-fw fa-trash"></i>-->
-<!--                 </a>-->
-<!--             </td>-->
-
-<!--         </tr>-->
-<!--      </table>-->
-
     </div>
 </div>
 

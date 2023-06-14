@@ -50,7 +50,7 @@
                 [[if globals().get('user'):]]
                 <a class="button is-light" href="[[=URL('auth/logout')]]">Sign out</a>
                 [[else:]]
-                <a class="button is-link" href="[[=URL('auth/plugin/oauth2google/login', vars=dict(next=URL('index')))]]">Sign In</a>
+                <a class="button is-link" href="[[=URL('auth/plugin/oauth2google/login', vars=dict(next=URL('index')))]]">Sign In with Google</a>
                 [[pass]]
               </div>
             </div>

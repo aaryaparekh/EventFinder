@@ -160,11 +160,15 @@
 
        <div v-for="e in events">
            <div class="box" style="margin-top: 10px;">
-               <p class="is-size-3">{{e.event_name}}
-                   <button class="button is-warning is-small" @click="edit_event(e.id)">
-                     <i class="fa fa-fw fa-pencil"></i>
+               <div class="container is-flex is-flex-direction-row is-justify-content-space-between">
+                   <p class="is-size-3">{{e.event_name}}
+
+                   </p>
+
+                   <button class="button is-warning" @click="edit_event(e.id)">
+                         <i class="fa fa-fw fa-pencil"></i>
                    </button>
-               </p>
+               </div>
                <p><i class="fa fa-fw fa-clock-o"></i>{{e.start_formatted}} to {{e.end_formatted}}</p>
                <p><i class="fa fa-fw fa-location-arrow"></i>{{e.location}}</p>
                <p>{{e.event_type}}</p>

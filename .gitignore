@@ -2,3 +2,4 @@ databases/*
 *.pyc
 __pycache__/*
 private/*
+static/js/config.js

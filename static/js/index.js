@@ -196,6 +196,7 @@ let init = (app) => {
                 map: this.map,
                 position: position,
                 title: event.event_name,
+                animation: google.maps.Animation.DROP,
             });
         }
     }

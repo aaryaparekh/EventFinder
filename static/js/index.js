@@ -180,11 +180,20 @@ let init = (app) => {
     }
 
     app.initMap = async function () {
+        const position = { lat: 36.994, lng: -122.0674 };
+
         const { Map } = await google.maps.importLibrary("maps");
-        this.vue.map = new Map(document.getElementById("map"), {
+        const { Marker } = await google.maps.importLibrary("marker");
+        this.map = new Map(document.getElementById("map"), {
             center: { lat: 36.974, lng: -122.030 },
             zoom: 13,
         });
+
+        const marker = new Marker({
+            map: this.map,
+            position: position,
+            title: "Porter Meadows",
+          });
     }
     window.initMap = app.initMap;
 

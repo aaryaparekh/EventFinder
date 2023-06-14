@@ -179,21 +179,46 @@ let init = (app) => {
         Vue.set(app.vue.filtered_events, r_idx, new_r);
     }
 
-    app.initMap = async function () {
-        const position = { lat: 36.994, lng: -122.0674 };
+    // app.initMap = async function () {
+    //     const position = { lat: 36.994, lng: -122.0674 };
 
-        const { Map } = await google.maps.importLibrary("maps");
-        const { Marker } = await google.maps.importLibrary("marker");
-        this.map = new Map(document.getElementById("map"), {
-            center: { lat: 36.974, lng: -122.030 },
-            zoom: 13,
-        });
+    //     const { Map } = await google.maps.importLibrary("maps");
+    //     const { Marker } = await google.maps.importLibrary("marker");
+    //     this.map = new Map(document.getElementById("map"), {
+    //         center: { lat: 36.974, lng: -122.030 },
+    //         zoom: 13,
+    //     });
 
-        const marker = new Marker({
-            map: this.map,
-            position: position,
-            title: "Porter Meadows",
-          });
+    //     const marker = new Marker({
+    //         map: this.map,
+    //         position: position,
+    //         title: "Porter Meadows",
+    //       });
+    // }
+    app.initMap = function () {
+        axios.get(script.src)
+        .then(() => {
+            const position = { lat: 36.994, lng: -122.0674 };
+            const { Map, Marker } = google.maps;
+            this.map = new Map(document.getElementById("map"), {
+                center: { lat: 36.974, lng: -122.030 },
+                zoom: 13,
+            });
+            const marker = new Marker({
+                map: this.map,
+                position: position,
+                title: "Porter Meadows",
+                });
+            const marker2 = new Marker({
+                map: this.map,
+                position: { lat: 36.96657342716043, lng: -122.01816041742845},
+                title: "Boardwalk",
+                });
+            })
+            
+        .catch((error) => {
+            console.error("Failed to load Google Maps API:", error);
+    });
     }
     window.initMap = app.initMap;
 

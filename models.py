@@ -27,8 +27,8 @@ db.define_table(
     Field('event_end', type='datetime', defaul=datetime.now()),
     Field('event_name', type='string', requires=IS_NOT_EMPTY()),
     Field('location', type='string', requires=IS_NOT_EMPTY()),
-    Field('lat', type="integer", default=0, requires=IS_NOT_EMPTY()),
-    Field('lng', type="integer", default=0, requires=IS_NOT_EMPTY()),
+    Field('lat', type="float", default=0, requires=IS_NOT_EMPTY()),
+    Field('lng', type="float", default=0, requires=IS_NOT_EMPTY()),
     Field('description', type='text', requires=IS_NOT_EMPTY()),
     Field('event_type', default=''),
 )

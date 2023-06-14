@@ -83,6 +83,8 @@ def create_event():
     event_name = str(request.params.get('event_name'))
     event_description = str(request.params.get('event_description'))
     event_location = str(request.params.get('event_location'))
+    event_lat = request.params.get('event_lat')
+    event_lng = request.params.get('event_lng')
     event_start = request.params.get('event_start')
     event_end = request.params.get('event_end')
     event_type = request.params.get('event_type')
@@ -99,7 +101,8 @@ def create_event():
 
     #insert new event into db
     db.event.insert(event_name=event_name, description=event_description, location=event_location,
-                    event_start=event_start, event_end=event_end, event_type=event_type)
+                    lat=event_lat, lng=event_lng, event_start=event_start,
+                    event_end=event_end, event_type=event_type)
 
 
 @action("edit_event")

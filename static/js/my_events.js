@@ -7,7 +7,7 @@ let app = {};
 let init = (app) => {
 
     let EVENT_NAME_MIN = 3;
-    let EVENT_DESCRIPTION_MIN = 15;
+    let EVENT_DESCRIPTION_MIN = 5;
     let EVENT_LOCATION_MIN = 3;
 
     // This is the Vue data.
@@ -70,7 +70,7 @@ let init = (app) => {
 
     app.add_new_event = function () {
         app.vue.modal_state = "modal is-active";
-
+        app.initMap();
         app.reset_event_inputs();
     }
 
@@ -93,6 +93,8 @@ let init = (app) => {
         app.vue.event_start = null;
         app.vue.event_end = null;
         app.vue.event_location = "";
+        app.vue.event_lat = 0;
+        app.vue.event_lng = 0;
     }
 
     app.check_event_errors = function () {
@@ -162,6 +164,8 @@ let init = (app) => {
                         event_start:Date.parse(app.vue.event_start),
                         event_end:Date.parse(app.vue.event_end),
                         event_location: app.vue.event_location,
+                        event_lat: app.vue.event_lat,
+                        event_lng: app.vue.event_lng,
                         event_type: app.vue.event_type,
                     }}
             ).then(function (response) {
@@ -240,10 +244,6 @@ let init = (app) => {
     }
 
     app.initMap = async function () {
-
-        let lattitude = 0;
-        let longitude = 0;
-
         const map = new google.maps.Map(document.getElementById("map"), {
             center: { lat: 36.974, lng: -122.030 },
             zoom: 13,
@@ -282,10 +282,9 @@ let init = (app) => {
               .then(({ results }) => {
                 map.setZoom(15);
                 map.setCenter(results[0].geometry.location);
-                console.log(results[0].geometry.location.lat());
-                console.log(results[0].geometry.location.lng());
-                lattitude = results[0].geometry.location.lat();
-                longitude = results[0].geometry.location.lng();
+                app.vue.event_location = results[0].formatted_address;
+                app.vue.event_lat = results[0].geometry.location.lat();
+                app.vue.event_lng = results[0].geometry.location.lng();
                 // Set the position of the marker using the place ID and location.
                 marker.setPlace({
                   placeId: place.place_id,
@@ -300,8 +299,6 @@ let init = (app) => {
               .catch((e) => window.alert("Geocoder failed due to: " + e));
           });
         
-        app.vue.event_lat = lattitude;
-        app.vue.event_lng = longitude;
     }
     window.initMap = app.initMap;
 
@@ -331,7 +328,7 @@ let init = (app) => {
     app.init = () => {
         // Put here any initialization code.
         app.get_events();
-        app.initMap();
+        //app.initMap();
 
         axios.get(get_current_datetime_url).then(function (response) {
             // console.log(response.data.current_datetime)

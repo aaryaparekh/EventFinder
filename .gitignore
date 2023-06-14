@@ -1,2 +1,4 @@
-databases/
+databases/*
 *.pyc
+node_modules/*
+static/js/config.js

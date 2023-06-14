@@ -102,7 +102,7 @@ def create_event():
 
 
 @action("edit_event")
-@action.uses(db, session, auth.user)
+@action.uses(db, session)
 def edit_event():
     edit_event_id = request.params.get('edit_event_id')
 
@@ -138,7 +138,7 @@ def edit_event():
 
 
 @action("delete_event")
-@action.uses(db, session, auth.user)
+@action.uses(db, session)
 def delete_event():
     delete_event_id = request.params.get('delete_event_id')
     del db.event[delete_event_id]

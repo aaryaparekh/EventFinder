@@ -423,3 +423,18 @@ success!
 success!
 success!
 success!
+timestamp: 2023-06-14T11:12:23.183278
+ALTER TABLE "event" ADD "lat" INTEGER;
+timestamp: 2023-06-14T11:12:23.189089
+ALTER TABLE "event" ADD "lng" INTEGER;
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!

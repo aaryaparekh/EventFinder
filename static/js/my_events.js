@@ -20,6 +20,8 @@ let init = (app) => {
         event_start: null,
         event_end: null,
         event_location: "",
+        event_lat: 0,
+        event_lng: 0,
 
         edit_modal_state: "modal",
         edit_event_id: null,
@@ -239,6 +241,9 @@ let init = (app) => {
 
     app.initMap = async function () {
 
+        let lattitude = 0;
+        let longitude = 0;
+
         const map = new google.maps.Map(document.getElementById("map"), {
             center: { lat: 36.974, lng: -122.030 },
             zoom: 13,
@@ -275,10 +280,13 @@ let init = (app) => {
             geocoder
               .geocode({ placeId: place.place_id })
               .then(({ results }) => {
-                map.setZoom(11);
+                map.setZoom(15);
                 map.setCenter(results[0].geometry.location);
+                console.log(results[0].geometry.location.lat());
+                console.log(results[0].geometry.location.lng());
+                lattitude = results[0].geometry.location.lat();
+                longitude = results[0].geometry.location.lng();
                 // Set the position of the marker using the place ID and location.
-                // @ts-ignore TODO This should be in @typings/googlemaps.
                 marker.setPlace({
                   placeId: place.place_id,
                   location: results[0].geometry.location,
@@ -286,13 +294,14 @@ let init = (app) => {
                 marker.setVisible(true);
                 infowindowContent.children["place-name"].textContent = place.name;
                 infowindowContent.children["place-id"].textContent = place.place_id;
-                infowindowContent.children["place-address"].textContent =
-                  results[0].formatted_address;
+                infowindowContent.children["place-address"].textContent = results[0].formatted_address;
                 infowindow.open(map, marker);
               })
               .catch((e) => window.alert("Geocoder failed due to: " + e));
           });
         
+        app.vue.event_lat = lattitude;
+        app.vue.event_lng = longitude;
     }
     window.initMap = app.initMap;
 

@@ -113,6 +113,8 @@ def edit_event():
     edit_event_name = str(request.params.get('edit_event_name'))
     edit_event_description = str(request.params.get('edit_event_description'))
     edit_event_location = str(request.params.get('edit_event_location'))
+    edit_event_lat = request.params.get('event_lat')
+    edit_event_lng = request.params.get('event_lng')
     edit_event_start = request.params.get('edit_event_start')
     edit_event_end = request.params.get('edit_event_end')
     edit_event_type = request.params.get('edit_event_type')
@@ -134,6 +136,8 @@ def edit_event():
     ret = db(db.event.id == edit_event_id).validate_and_update(event_name=edit_event_name,
                                                                description=edit_event_description,
                                                                location=edit_event_location,
+                                                               lat=edit_event_lat,
+                                                               lng=edit_event_lng,
                                                                event_start=edit_event_start,
                                                                event_end=edit_event_end,
                                                                event_type=edit_event_type)

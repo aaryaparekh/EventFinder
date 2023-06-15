@@ -122,11 +122,8 @@
                     </div>
 
                     <div class="field">
-                            <label class="label">Event Location</label>
-                            <!-- <p class="has-text-danger">{{event_location_error}}</p>
-                            <div class="control">
-                                <input class="input" v-model="event_location" type="text" placeholder="Location">
-                            </div> -->
+                        <label class="label">Event Location</label>
+                            <p class="has-text-danger">{{event_location_error}}</p>
                     </div>
                     <div style="display: none">
                         <input
@@ -139,7 +136,6 @@
                     <div id="map" class="block"></div>
                     <div id="infowindow-content">
                         <span id="place-name" class="title"></span><br />
-                        <strong>Place ID</strong>: <span id="place-id"></span><br />
                         <span id="place-address"></span>
                     </div>
                 
@@ -163,14 +159,6 @@
                         <p class="has-text-danger">{{event_name_error}}</p>
                         <div class="control">
                             <input class="input" v-model="event_name" type="text" placeholder="Event name">
-                        </div>
-                    </div>
-
-                    <div class="field">
-                        <label class="label">Event Location</label>
-                        <p class="has-text-danger">{{event_location_error}}</p>
-                        <div class="control">
-                            <input class="input" v-model="event_location" type="text" placeholder="Location">
                         </div>
                     </div>
 
@@ -208,6 +196,24 @@
                         <div class="control">
                             <textarea class="textarea" v-model="event_description" placeholder="Description"></textarea>
                         </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Event Location</label>
+                            <p class="has-text-danger">{{event_location_error}}</p>
+                    </div>
+                    <div style="display: none">
+                        <input
+                            id="pac-input-edit"
+                            class="controls"
+                            type="text"
+                            placeholder="Enter a location"
+                        />
+                    </div>
+                    <div id="map-edit" class="block"></div>
+                    <div id="infowindow-content-edit">
+                        <span id="place-name-edit" class="title"></span><br />
+                        <span id="place-address-edit"></span>
                     </div>
 
                     <button class="button is-primary" @click="edit_event_publish">Publish Changes</button>

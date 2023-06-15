@@ -13,19 +13,19 @@ let init = (app) => {
         curr_save_state: [],
         is_live_filtered: false,
         current_page: 0,
-        last_page: 0,        
+        last_page: 0,
         input_field: '',
         event_type_filter_input: '',
-        event_type_filter_list: 
+        event_type_filter_list:
         [
         'Concert', 'Festival', 'Live Music', 'Sports', 'Charity', 'Fundraiser',
         'Exhibition', 'Theatre', 'Art', 'Family and Kids',
         'Fashion', 'Food and Drink', 'Comedy', 'Film', 'Outdoors',
-        'Gaming', 'Literary', 'Conference', 'Workshop' 
+        'Gaming', 'Literary', 'Conference', 'Workshop'
         ],
         markers: [],
-    };    
-    
+    };
+
     app.enumerate = (a) => {
         // This adds an _idx field to each element of the array.
         let k = 0;
@@ -38,7 +38,7 @@ let init = (app) => {
             e.show_content = false;
             const startDateObj = new Date(e.event_start);
             const endDateObj = new Date(e.event_end);
-            
+
             const startDate = startDateObj.toDateString();
             const endDate = endDateObj.toDateString();
             if (startDate === endDate) {
@@ -56,19 +56,19 @@ let init = (app) => {
                 minute: "2-digit",
                 hour12: true
             });
-            e.formatted_time = startTime + " - " + endTime;      
+            e.formatted_time = startTime + " - " + endTime;
         });
         return a;
     }
 
     app.set_pages_of_events = function () {
-        const events_per_page = 2; 
+        const events_per_page = 2;
         app.vue.pages_of_events = [];
         if (!app.vue.event_type_filter_input && !app.vue.is_live_filtered) {
             app.vue.curr_save_state = [...app.vue.all_events];
         }
 
-        if (app.vue.curr_save_state.length > 0) {   
+        if (app.vue.curr_save_state.length > 0) {
             for (var i = 0; i < app.vue.curr_save_state.length; i += events_per_page) {
                 var page = app.vue.curr_save_state.slice(i, i + events_per_page);
                 app.vue.pages_of_events.push(page);
@@ -100,8 +100,8 @@ let init = (app) => {
             app.filter_event_type(app.vue.all_events);
         }
         else {
-            app.filter_live_events(app.vue.all_events);  
-            app.filter_event_type(app.vue.curr_save_state);       
+            app.filter_live_events(app.vue.all_events);
+            app.filter_event_type(app.vue.curr_save_state);
         }
     }
 
@@ -149,7 +149,7 @@ let init = (app) => {
                 e.event_name.toLowerCase().includes(app.vue.input_field.toString().toLowerCase())
             );
             app.sort_events(app.vue.filtered_events);
-        } 
+        }
         else {
             app.set_page(app.vue.current_page);
         }
@@ -215,7 +215,7 @@ let init = (app) => {
             });
         }
     }
- 
+
     window.initMap = app.initMap;
 
     app.methods = {

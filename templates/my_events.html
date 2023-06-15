@@ -175,17 +175,10 @@
     let get_current_datetime_url = "[[=XML(get_current_datetime_url)]]";
 
     let date = new Date();
-    date.setDate(date.getDate() - 1)  //Set date to yesterday
+    date.setHours(date.getHours() - 7)  //Set date to yesterday
 
     let x = document.getElementById("event_start_input").min = date.toISOString().substring(0, 16);
     let y = document.getElementById("event_end_input").min = date.toISOString().substring(0, 16);
-
-    let x_ = document.getElementById("event_edit_start_input").min = date.toISOString().substring(0, 16);
-    let y_ = document.getElementById("event_edit_end_input").min = date.toISOString().substring(0, 16);
-
-
-    console.log("Ran script with " + date.toISOString().substring(0, 16));
-    console.log("Current datetime is " + new Date().toLocaleString() );
 
 </script>
 <script src="js/my_events.js"></script>

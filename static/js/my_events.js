@@ -23,6 +23,7 @@ let init = (app) => {
         event_lng: 0,
 
         edit_modal_state: "modal",
+        edit_modal: false,
         edit_event_id: null,
 
         current_datetime: "",
@@ -201,12 +202,14 @@ let init = (app) => {
                 break;
             }
         }
-        app.vue.edit_modal_state = "modal is-active";
+        app.vue.modal_state = "modal is-active";
+        app.vue.edit_modal = true;
         app.initMap();
     }
 
     app.cancel_edit_event = function () {
-        app.vue.edit_modal_state = "modal";
+        app.vue.modal_state = "modal";
+        app.vue.edit_modal = false;
         app.reset_event_errors();
     }
 
@@ -230,8 +233,8 @@ let init = (app) => {
                         edit_event_id: app.vue.event_id,}}
             ).then(function (response) {
                 //TODO: Check if form value is correct, else keep modal active and send error message
-                app.vue.edit_modal_state = "modal"
-
+                app.vue.modal_state = "modal"
+                app.vue.edit_modal = false;
                 app.get_events();
 
             });
@@ -241,8 +244,8 @@ let init = (app) => {
 
     app.delete_event = function () {
         axios.get(delete_event_url, {params: {delete_event_id: app.vue.event_id}}).then(function (response) {
-            app.vue.edit_modal_state = "modal"
-
+            app.vue.modal_state = "modal"
+            app.vue.edit_modal = false;
             app.get_events();
         });
     }

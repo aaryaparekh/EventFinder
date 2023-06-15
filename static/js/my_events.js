@@ -37,7 +37,6 @@ let init = (app) => {
         event_description_error: "",
 
         event_type: "",
-        // edit_event_type: "",
         event_types: ['Concert', 'Festival', 'Live Music', 'Sports', 'Charity', 'Fundraiser',
         'Exhibition', 'Theatre', 'Art', 'Family and Kids',
         'Fashion', 'Food and Drink', 'Comedy', 'Film', 'Outdoors',
@@ -154,8 +153,6 @@ let init = (app) => {
         console.log("app.vue.event_start = " + String(app.vue.event_start));
         console.log("app.vue.event_end = " + String(app.vue.event_end));
         console.log("types = ", typeof app.vue.event_start);
-
-        // console.log("Giving: " + Date.parse(app.vue.event_start) + " and " + Date.parse(app.vue.event_end))
 
         if (!error) {
             axios.get(create_event_url,
@@ -299,7 +296,6 @@ let init = (app) => {
                 });
                 marker.setVisible(true);
                 infowindowContent.children["place-name"].textContent = place.name;
-                //infowindowContent.children["place-id"].textContent = place.place_id;
                 infowindowContent.children["place-address"].textContent = results[0].formatted_address;
                 infowindow.open(map, marker);
                 })
@@ -335,26 +331,8 @@ let init = (app) => {
     app.init = () => {
         // Put here any initialization code.
         app.get_events();
-        //app.initMap();
 
         axios.get(get_current_datetime_url).then(function (response) {
-            // console.log(response.data.current_datetime)
-
-            // var currentDate = new Date();
-            // var datetime = "Last Sync: " + currentDate.getDay() + "/" + currentDate.getMonth()
-            // + "/" + currentDate.getFullYear() + " @ "
-            // + currentDate.getHours() + ":" + currentDate.getMinutes() + ":" + currentDate.getSeconds();
-            // console.log(datetime)
-
-            // let date = new Date();
-            // let cur_date = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + 'T' + date.getHours() + ":"
-            //     + date.getMinutes();
-            // console.log(new Date().toString())
-            // console.log(date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + 'T' + date.getHours() + ":"
-            //     + date.getMinutes());
-
-            // app.vue.current_datetime = response.data.current_datetime
-            // app.vue.current_datetime = Date().getTime()
         });
     };
 

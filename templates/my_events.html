@@ -37,12 +37,7 @@
     #map #infowindow-content {
     display: inline;
     }
-
 </style>
-
-
-
-
 
 <head>
     <!-- ... other head elements ... -->
@@ -56,20 +51,13 @@
 </head>
 
 <div class="section" id="vue-target" v-cloak>
-<!--    <div>-->
-<!--      EVENTS:-->
-<!--      {{current_datetime}}-->
-<!--    </div>-->
-
     <div class="container">
-
         <h1 class="title ">Your Events</h1>
 
         <a class="button is-primary" @click="add_new_event">
             <span class="icon"><i class = "fa fa-plus"></i></span>
             <span>Add New Event</span>
         </a>
-
 
         <!--Modal for creating events-->
         <div :class="modal_state">
@@ -139,43 +127,39 @@
                         <span id="place-address"></span>
                     </div>
                 
-                   <div v-if="edit_modal">
-                       <button class="button is-primary" @click="edit_event_publish">Publish Changes</button>
-                       <button class="button is-danger" @click="cancel_edit_event">Cancel</button>
-                       <button class="button is-warning is-right" @click="delete_event">
-                           <span class="icon"><i class = "fa fa-trash"></i></span>
-                           <p>Delete Event</p>
-                       </button>
-                   </div>
+                    <div v-if="edit_modal">
+                        <button class="button is-primary" @click="edit_event_publish">Publish Changes</button>
+                        <button class="button is-danger" @click="cancel_edit_event">Cancel</button>
+                        <button class="button is-warning is-right" @click="delete_event">
+                            <span class="icon"><i class = "fa fa-trash"></i></span>
+                            <p>Delete Event</p>
+                        </button>
+                    </div>
 
-                   <div v-else="">
-                       <button class="button is-primary" @click="create_event">Publish Event</button>
-                       <button class="button is-danger" @click="cancel_add_new_event">Cancel</button>
-                   </div>
+                    <div v-else="">
+                        <button class="button is-primary" @click="create_event">Publish Event</button>
+                        <button class="button is-danger" @click="cancel_add_new_event">Cancel</button>
+                    </div>
 
+                </div>
+            </div>
+            <button class="modal-close is-large" aria-label="close" @click="cancel_add_new_event"></button>
+        </div>
 
-               </div>
-           </div>
-           <button class="modal-close is-large" aria-label="close" @click="cancel_add_new_event"></button>
-       </div>
-
-       <div v-for="e in events">
-           <div class="box" style="margin-top: 10px;">
-               <div class="container is-flex is-flex-direction-row is-justify-content-space-between">
-                   <p class="is-size-3">{{e.event_name}}
-
-                   </p>
-
-                   <button class="button is-warning" @click="edit_event(e.id)">
-                         <i class="fa fa-fw fa-pencil"></i>
-                   </button>
-               </div>
-               <p><i class="fa fa-fw fa-clock-o"></i>{{e.start_formatted}} to {{e.end_formatted}}</p>
-               <p><i class="fa fa-fw fa-location-arrow"></i>{{e.location}}</p>
-               <p>{{e.event_type}}</p>
-               <p>{{e.description}}</p>
-           </div>
-       </div>
+        <div v-for="e in events">
+            <div class="box" style="margin-top: 10px;">
+                <div class="container is-flex is-flex-direction-row is-justify-content-space-between">
+                    <p class="is-size-3">{{e.event_name}}</p>
+                    <button class="button is-warning" @click="edit_event(e.id)">
+                        <i class="fa fa-fw fa-pencil"></i>
+                    </button>
+                </div>
+                <p><i class="fa fa-fw fa-clock-o"></i>{{e.start_formatted}} to {{e.end_formatted}}</p>
+                <p><i class="fa fa-fw fa-location-arrow"></i>{{e.location}}</p>
+                <p>{{e.event_type}}</p>
+                <p>{{e.description}}</p>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -192,9 +176,6 @@
 
     let date = new Date();
     date.setDate(date.getDate() - 1)  //Set date to yesterday
-
-    // let cur_date = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + 'T' + date.getHours() + ":"
-    //             + date.getMinutes();
 
     let x = document.getElementById("event_start_input").min = date.toISOString().substring(0, 16);
     let y = document.getElementById("event_end_input").min = date.toISOString().substring(0, 16);

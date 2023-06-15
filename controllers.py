@@ -43,12 +43,6 @@ def index():
         get_home_events_url = URL('home_list_events', signer=url_signer),
     )
 
-# @action("Profile")
-# @action.uses("profile.html", auth, T)
-# def Profile():
-#     actions = {"allowed_actions": auth.param.allowed_actions}
-#     return dict(actions=actions)
-
 
 @action("home_list_events")
 @action.uses(db, auth, url_signer.verify())
@@ -56,7 +50,7 @@ def home_list_events():
     all_events = db(db.event).select()
     return dict(all_events=all_events)
 
-#TODO: Add auth to events
+
 @action("my_events")
 @action.uses("my_events.html", db, session, url_signer, auth.user)
 def my_events(events_created_by=None):
@@ -66,7 +60,6 @@ def my_events(events_created_by=None):
         edit_event_url = URL('edit_event', signer=url_signer),
         delete_event_url = URL('delete_event', signer=url_signer),
         get_current_datetime_url = URL('get_current_datetime')
-        # url_signer=url_signer,
     )
 
 
@@ -88,12 +81,6 @@ def create_event():
     event_start = request.params.get('event_start')
     event_end = request.params.get('event_end')
     event_type = request.params.get('event_type')
-
-    print("Creating EVENT -------------")
-    print("")
-    print("event_start", event_start)
-    print("event_end", event_end)
-    print("types = ", type(event_start), type(event_end))
 
     #convert from miliseconds to datetime
     event_start = datetime.datetime.fromtimestamp(int(event_start) / 1000.0)
@@ -119,19 +106,9 @@ def edit_event():
     edit_event_end = request.params.get('edit_event_end')
     edit_event_type = request.params.get('edit_event_type')
 
-    print("EDITING EVENT -------------")
-    print("")
-    print("edit_event_id", edit_event_id)
-    print("edit_event_start", edit_event_start)
-    print("edit_event_end", edit_event_end)
-    print("edit_event_type: ", type(edit_event_type))
-
     # convert from miliseconds to datetime
     edit_event_start = datetime.datetime.fromtimestamp(int(edit_event_start) / 1000.0)
     edit_event_end = datetime.datetime.fromtimestamp(int(edit_event_end) / 1000.0)
-
-    print("edit_event_start", edit_event_start)
-    print("edit_event_end", edit_event_end)
 
     ret = db(db.event.id == edit_event_id).validate_and_update(event_name=edit_event_name,
                                                                description=edit_event_description,
@@ -141,8 +118,6 @@ def edit_event():
                                                                event_start=edit_event_start,
                                                                event_end=edit_event_end,
                                                                event_type=edit_event_type)
-    print("-------")
-    print("RETURN: ", ret)
 
 
 @action("delete_event")
@@ -155,7 +130,5 @@ def delete_event():
 @action('get_current_datetime')
 @action.uses(session)
 def get_current_datetime():
-    print('Python output: ', datetime.datetime.now())
-
     return dict(get_current_datetime=datetime.datetime.now().timestamp())
 

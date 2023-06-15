@@ -63,7 +63,7 @@ let init = (app) => {
     }
 
     app.set_pages_of_events = function () {
-        const events_per_page = 6;
+        const events_per_page = 10;
         app.vue.pages_of_events = [];
         if (!app.vue.event_type_filter_input && !app.vue.is_live_filtered) {
             app.vue.curr_save_state = [...app.vue.all_events];
@@ -117,7 +117,8 @@ let init = (app) => {
             });
         }
         app.set_pages_of_events();
-        app.initMap();
+        app.deleteMarkers();
+        app.setMarkers();
     }
 
     app.filter_event_type = function (list) {
@@ -127,21 +128,24 @@ let init = (app) => {
             );
         }
         app.set_pages_of_events();
-        app.initMap();
+        app.deleteMarkers();
+        app.setMarkers();
     }
 
     app.clear_filters = function () {
         app.vue.event_type_filter_input = "";
         app.vue.is_live_filtered = false;
         app.set_pages_of_events();
-        app.initMap();
+        app.deleteMarkers();
+        app.setMarkers();
     }
 
     app.set_page = function (page) {
         app.vue.current_page = page;
         app.vue.filtered_events = [...app.vue.pages_of_events[app.vue.current_page]];
         app.sort_events(app.vue.filtered_events);
-        app.initMap();
+        app.deleteMarkers();
+        app.setMarkers();
     }
 
     app.search_events = function () {
@@ -189,11 +193,18 @@ let init = (app) => {
         const position = { lat: 36.994, lng: -122.0674 };
 
         const { Map } = await google.maps.importLibrary("maps");
-        const { Marker } = await google.maps.importLibrary("marker");
+        
         app.vue.map = new Map(document.getElementById("map"), {
             center: { lat: 36.974, lng: -122.030 },
             zoom: 13,
         });
+        app.setMarkers();
+        
+    }
+    window.initMap = app.initMap;
+
+    app.setMarkers = async function () {
+        const { Marker } = await google.maps.importLibrary("marker");
         for (let i = 0; i < app.vue.filtered_events.length; i++) {
             const event = app.vue.filtered_events[i];
             const position = { lat: event.lat, lng: event.lng };
@@ -203,6 +214,7 @@ let init = (app) => {
                 title: event.event_name,
                 animation: google.maps.Animation.DROP,
             });
+            app.vue.markers.push(marker);
             const contentString = 
             '<div id="content">' +
             '<h1>' +
@@ -221,7 +233,6 @@ let init = (app) => {
 
             const infowindow = new google.maps.InfoWindow({
                 content: contentString,
-                ariaLabel: event.event_name,
               });
             event.isMarkerOpen = false;
             marker.addListener("click", () => {
@@ -253,7 +264,13 @@ let init = (app) => {
               });
         }
     }
-    window.initMap = app.initMap;
+
+    app.deleteMarkers = function () {
+        for (var i = 0; i < app.vue.markers.length; i++) {
+          app.vue.markers[i].setMap(null);
+        }
+        app.vue.markers = [];
+      }
 
     app.go_to_marker = function (lat,lng) {
         app.vue.map.setZoom(14);

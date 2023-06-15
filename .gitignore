@@ -3,3 +3,4 @@ databases/*
 __pycache__/*
 private/*
 static/js/config.js
+node_modules/*

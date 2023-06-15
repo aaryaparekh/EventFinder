@@ -189,8 +189,8 @@ let init = (app) => {
             center: { lat: 36.974, lng: -122.030 },
             zoom: 13,
         });
-        for (let i = 0; i < this.vue.all_events.length; i++) {
-            const event = this.vue.all_events[i];
+        for (let i = 0; i < app.vue.all_events.length; i++) {
+            const event = app.vue.all_events[i];
             const position = { lat: event.lat, lng: event.lng };
             const marker = new google.maps.Marker({
                 map: this.map,

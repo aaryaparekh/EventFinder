@@ -8,7 +8,6 @@ let init = (app) => {
 
     let EVENT_NAME_MIN = 3;
     let EVENT_DESCRIPTION_MIN = 5;
-    let EVENT_LOCATION_MIN = 3;
 
     // This is the Vue data.
     app.data = {
@@ -113,8 +112,8 @@ let init = (app) => {
         if (app.vue.event_location.length === 0) {
             app.vue.event_location_error = "Event location cannot be empty.";
             error = true;
-        } else if (app.vue.event_location.length < EVENT_LOCATION_MIN) {
-            app.vue.event_location_error = "Event location needs to be longer.";
+        } else if (!app.vue.event_location) {
+            app.vue.event_location_error = "Event location must be a valid address";
             error = true;
         }
 
@@ -187,6 +186,8 @@ let init = (app) => {
                 app.vue.event_start = app.vue.events[i].event_start;
                 app.vue.event_end = app.vue.events[i].event_end;
                 app.vue.event_location = app.vue.events[i].location;
+                app.vue.event_lat = app.vue.events[i].lat;
+                app.vue.event_lng = app.vue.events[i].lng;
                 app.vue.event_type = app.vue.events[i].event_type;
                 app.vue.event_id = event_id;
 
@@ -201,6 +202,7 @@ let init = (app) => {
             }
         }
         app.vue.edit_modal_state = "modal is-active";
+        app.initMap();
     }
 
     app.cancel_edit_event = function () {
@@ -222,6 +224,8 @@ let init = (app) => {
                         edit_event_start:Date.parse(app.vue.event_start),
                         edit_event_end:Date.parse(app.vue.event_end),
                         edit_event_location: app.vue.event_location,
+                        event_lat: app.vue.event_lat,
+                        event_lng: app.vue.event_lng,
                         edit_event_type: app.vue.event_type,
                         edit_event_id: app.vue.event_id,}}
             ).then(function (response) {
@@ -247,39 +251,39 @@ let init = (app) => {
         const map = new google.maps.Map(document.getElementById("map"), {
             center: { lat: 36.974, lng: -122.030 },
             zoom: 13,
-          });
-          const input = document.getElementById("pac-input");
-          // Specify just the place data fields that you need.
-          const autocomplete = new google.maps.places.Autocomplete(input, {
-            fields: ["place_id", "geometry", "name", "formatted_address"],
-          });
-        
-          autocomplete.bindTo("bounds", map);
-          map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-        
-          const infowindow = new google.maps.InfoWindow();
-          const infowindowContent = document.getElementById("infowindow-content");
-        
-          infowindow.setContent(infowindowContent);
-        
-          const geocoder = new google.maps.Geocoder();
-          const marker = new google.maps.Marker({ map: map });
-        
-          marker.addListener("click", () => {
+        });
+        const input = document.getElementById("pac-input");
+        // Specify just the place data fields that you need.
+        const autocomplete = new google.maps.places.Autocomplete(input, {
+        fields: ["place_id", "geometry", "name", "formatted_address"],
+        });
+    
+        autocomplete.bindTo("bounds", map);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+    
+        const infowindow = new google.maps.InfoWindow();
+        const infowindowContent = document.getElementById("infowindow-content");
+    
+        infowindow.setContent(infowindowContent);
+    
+        const geocoder = new google.maps.Geocoder();
+        const marker = new google.maps.Marker({ map: map });
+    
+        marker.addListener("click", () => {
             infowindow.open(map, marker);
-          });
-          autocomplete.addListener("place_changed", () => {
+        });
+        autocomplete.addListener("place_changed", () => {
             infowindow.close();
-        
+    
             const place = autocomplete.getPlace();
-        
+    
             if (!place.place_id) {
-              return;
+                return;
             }
-        
+    
             geocoder
-              .geocode({ placeId: place.place_id })
-              .then(({ results }) => {
+                .geocode({ placeId: place.place_id })
+                .then(({ results }) => {
                 map.setZoom(15);
                 map.setCenter(results[0].geometry.location);
                 app.vue.event_location = results[0].formatted_address;
@@ -287,17 +291,17 @@ let init = (app) => {
                 app.vue.event_lng = results[0].geometry.location.lng();
                 // Set the position of the marker using the place ID and location.
                 marker.setPlace({
-                  placeId: place.place_id,
-                  location: results[0].geometry.location,
+                    placeId: place.place_id,
+                    location: results[0].geometry.location,
                 });
                 marker.setVisible(true);
                 infowindowContent.children["place-name"].textContent = place.name;
-                infowindowContent.children["place-id"].textContent = place.place_id;
+                //infowindowContent.children["place-id"].textContent = place.place_id;
                 infowindowContent.children["place-address"].textContent = results[0].formatted_address;
                 infowindow.open(map, marker);
-              })
-              .catch((e) => window.alert("Geocoder failed due to: " + e));
-          });
+                })
+                .catch((e) => window.alert("Geocoder failed due to: " + e));
+        });
         
     }
     window.initMap = app.initMap;

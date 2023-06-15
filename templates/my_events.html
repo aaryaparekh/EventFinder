@@ -6,157 +6,158 @@
 }
 </style>
 
+<style>
+    #map {
+    height: 400px;
+    width: 100%;
+    }
+    .controls {
+    background-color: #fff;
+    border-radius: 2px;
+    border: 1px solid transparent;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    box-sizing: border-box;
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: 300;
+    height: 29px;
+    margin-left: 17px;
+    margin-top: 10px;
+    outline: none;
+    padding: 0 11px 0 13px;
+    text-overflow: ellipsis;
+    width: 300px;
+    }
+    .controls:focus {
+    border-color: #4d90fe;
+    }
+    #infowindow-content {
+    display: none;
+    }
+    #map #infowindow-content {
+    display: inline;
+    }
+
+</style>
+
+
+
+
+
+<head>
+    <!-- ... other head elements ... -->
+    <script src="js/config.js"></script>
+    <script>
+        let script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${config.api_key}&callback=initMap&libraries=places&v=weekly`;
+        script.async = true;
+        document.head.appendChild(script);
+    </script>
+</head>
+
 <div class="section" id="vue-target" v-cloak>
 <!--    <div>-->
 <!--      EVENTS:-->
 <!--      {{current_datetime}}-->
 <!--    </div>-->
 
-   <div class="container">
+    <div class="container">
 
-      <h1 class="title ">Your Events</h1>
+        <h1 class="title ">Your Events</h1>
 
-       <a class="button is-link" @click="add_new_event">
-           <span class="icon"><i class = "fa fa-plus"></i></span>
-           <span>Add New Event</span>
-       </a>
+        <a class="button is-primary" @click="add_new_event">
+            <span class="icon"><i class = "fa fa-plus"></i></span>
+            <span>Add New Event</span>
+        </a>
 
 
-       <!--Modal for creating events-->
-       <div :class="modal_state">
-           <div class="modal-background" @click="cancel_add_new_event"></div>
-           <div class="modal-content">
-               <!-- Any other Bulma elements you want -->
-               <div class="box">
-                   <div class="field">
-                       <label class="label">Event Name</label>
-                       <p class="has-text-danger">{{event_name_error}}</p>
-                       <div class="control">
-                           <input class="input" v-model="event_name" type="text" placeholder="Event name">
-                       </div>
-                   </div>
-
-                   <div class="field">
-                       <label class="label">Event Location</label>
-                       <p class="has-text-danger">{{event_location_error}}</p>
-                       <div class="control">
-                           <input class="input" v-model="event_location" type="text" placeholder="Location">
-                       </div>
-                   </div>
-
-                   <div class="field">
-                       <label class="label">Start</label>
-                       <p class="has-text-danger">{{event_start_error}}</p>
-                       <div class="control">
-                           <input class="input" v-model="event_start" type="datetime-local" id="event_start_input">
-                       </div>
-                   </div>
-
-                   <div class="field">
-                       <label class="label">End</label>
-                       <p class="has-text-danger">{{event_end_error}}</p>
-                       <div class="control">
-                           <input class="input" v-model="event_end" type="datetime-local" id="event_end_input">
-                       </div>
-                   </div>
-
-                   <div class="field">
-                       <label class="label">Type</label>
-                       <p class="has-text-danger">{{event_type_error}}</p>
+        <!--Modal for creating events-->
+        <div :class="modal_state">
+            <div class="modal-background" @click="cancel_add_new_event"></div>
+            <div class="modal-content">
+                <!-- Any other Bulma elements you want -->
+                <div class="box">
+                    <div class="field">
+                        <label class="label">Event Name</label>
+                        <p class="has-text-danger">{{event_name_error}}</p>
                         <div class="control">
-                            <div class="select">
-                                <select v-model="event_type">
-                                    <option v-for="t in event_types" :key="t" :value="t">{{ t }}</option>
-                                </select>
-                            </div>
+                            <input class="input" v-model="event_name" type="text" placeholder="Event name">
                         </div>
                     </div>
 
-                   <div class="field">
-                       <label class="label">Description</label>
-                       <p class="has-text-danger">{{event_description_error}}</p>
-                       <div class="control">
-                           <textarea class="textarea" v-model="event_description" placeholder="Description"></textarea>
-                       </div>
-                   </div>
+                    <div class="field">
+                        <label class="label">Start</label>
+                        <p class="has-text-danger">{{event_start_error}}</p>
+                        <div class="control">
+                            <input class="input" v-model="event_start" type="datetime-local" id="event_start_input">
+                        </div>
+                    </div>
 
-                   <button class="button is-link" @click="create_event">Publish Event</button>
-                   <button class="button is-danger" @click="cancel_add_new_event">Cancel</button>
-               </div>
-           </div>
-           <button class="modal-close is-large" aria-label="close" @click="cancel_add_new_event"></button>
-       </div>
-
-
-       <!--Modal for editing events-->
-       <div :class="edit_modal_state">
-           <div class="modal-background" @click="cancel_add_new_event"></div>
-           <div class="modal-content">
-               <!-- Any other Bulma elements you want -->
-               <div class="box">
-                   <div class="field">
-                       <label class="label">Event Name</label>
-                       <p class="has-text-danger">{{event_name_error}}</p>
-                       <div class="control">
-                           <input class="input" v-model="event_name" type="text" placeholder="Event name">
-                       </div>
-                   </div>
-
-                   <div class="field">
-                       <label class="label">Event Location</label>
-                       <p class="has-text-danger">{{event_location_error}}</p>
-                       <div class="control">
-                           <input class="input" v-model="event_location" type="text" placeholder="Location">
-                       </div>
-                   </div>
-
-                   <div class="field">
-                       <label class="label">Start</label>
-                       <p class="has-text-danger">{{event_start_error}}</p>
-                       <div class="control">
-                           <input class="input" v-model="event_start" type="datetime-local" id="event_edit_start_input">
-                       </div>
-                   </div>
-
-                   <div class="field">
-                       <label class="label">End</label>
-                       <p class="has-text-danger">{{event_end_error}}</p>
-                       <div class="control">
-                           <input class="input" v-model="event_end" type="datetime-local" id="event_edit_end_input">
-                       </div>
-                   </div>
-
+                    <div class="field">
+                        <label class="label">End</label>
+                        <p class="has-text-danger">{{event_end_error}}</p>
+                        <div class="control">
+                            <input class="input" v-model="event_end" type="datetime-local" id="event_end_input">
+                        </div>
+                    </div>
+                    
                     <div class="field">
                         <label class="label">Type</label>
                         <p class="has-text-danger">{{event_type_error}}</p>
-                        <div class="control">
-                            <div class="select">
-                                <select v-model="event_type">
-                                    <option v-for="t in event_types" :key="t" :value="t">{{ t }}</option>
-                                </select>
+                            <div class="control">
+                                <div class="select">
+                                    <select v-model="event_type">
+                                        <option v-for="t in event_types" :key="t" :value="t">{{ t }}</option>
+                                    </select>
+                                </div>
                             </div>
+                        </div>
+
+                    <div class="field">
+                        <label class="label">Description</label>
+                        <p class="has-text-danger">{{event_description_error}}</p>
+                        <div class="control">
+                            <textarea class="textarea" v-model="event_description" placeholder="Description"></textarea>
                         </div>
                     </div>
 
-                   <div class="field">
-                       <label class="label">Description</label>
-                       <p class="has-text-danger">{{event_description_error}}</p>
-                       <div class="control">
-                           <textarea class="textarea" v-model="event_description" placeholder="Description"></textarea>
-                       </div>
+                    <div class="field">
+                        <label class="label">Event Location</label>
+                            <p class="has-text-danger">{{event_location_error}}</p>
+                    </div>
+                    <div style="display: none">
+                        <input
+                            id="pac-input"
+                            class="controls"
+                            type="text"
+                            placeholder="Enter a location"
+                        />
+                    </div>
+                    <div id="map" class="block"></div>
+                    <div id="infowindow-content">
+                        <span id="place-name" class="title"></span><br />
+                        <span id="place-address"></span>
+                    </div>
+                
+                   <div v-if="edit_modal">
+                       <button class="button is-primary" @click="edit_event_publish">Publish Changes</button>
+                       <button class="button is-danger" @click="cancel_edit_event">Cancel</button>
+                       <button class="button is-warning is-right" @click="delete_event">
+                           <span class="icon"><i class = "fa fa-trash"></i></span>
+                           <p>Delete Event</p>
+                       </button>
                    </div>
 
-                   <button class="button is-link" @click="edit_event_publish">Publish Changes</button>
-                   <button class="button is-danger" @click="cancel_edit_event">Cancel</button>
-                   <button class="button is-warning is-right" @click="delete_event">
-                       <span class="icon"><i class = "fa fa-trash"></i></span>
-                        <p>Delete Event</p>
-                   </button>
+                   <div v-else="">
+                       <button class="button is-primary" @click="create_event">Publish Event</button>
+                       <button class="button is-danger" @click="cancel_add_new_event">Cancel</button>
+                   </div>
+
+
                </div>
            </div>
            <button class="modal-close is-large" aria-label="close" @click="cancel_add_new_event"></button>
        </div>
-
 
        <div v-for="e in events">
            <div class="box" style="margin-top: 10px;">

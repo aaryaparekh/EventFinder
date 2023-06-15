@@ -7,8 +7,7 @@ let app = {};
 let init = (app) => {
 
     let EVENT_NAME_MIN = 3;
-    let EVENT_DESCRIPTION_MIN = 15;
-    let EVENT_LOCATION_MIN = 3;
+    let EVENT_DESCRIPTION_MIN = 5;
 
     // This is the Vue data.
     app.data = {
@@ -20,8 +19,11 @@ let init = (app) => {
         event_start: null,
         event_end: null,
         event_location: "",
+        event_lat: 0,
+        event_lng: 0,
 
         edit_modal_state: "modal",
+        edit_modal: false,
         edit_event_id: null,
 
         current_datetime: "",
@@ -35,7 +37,6 @@ let init = (app) => {
         event_description_error: "",
 
         event_type: "",
-        // edit_event_type: "",
         event_types: ['Concert', 'Festival', 'Live Music', 'Sports', 'Charity', 'Fundraiser',
         'Exhibition', 'Theatre', 'Art', 'Family and Kids',
         'Fashion', 'Food and Drink', 'Comedy', 'Film', 'Outdoors',
@@ -68,7 +69,7 @@ let init = (app) => {
 
     app.add_new_event = function () {
         app.vue.modal_state = "modal is-active";
-
+        app.initMap();
         app.reset_event_inputs();
     }
 
@@ -91,6 +92,8 @@ let init = (app) => {
         app.vue.event_start = null;
         app.vue.event_end = null;
         app.vue.event_location = "";
+        app.vue.event_lat = 0;
+        app.vue.event_lng = 0;
     }
 
     app.check_event_errors = function () {
@@ -109,8 +112,8 @@ let init = (app) => {
         if (app.vue.event_location.length === 0) {
             app.vue.event_location_error = "Event location cannot be empty.";
             error = true;
-        } else if (app.vue.event_location.length < EVENT_LOCATION_MIN) {
-            app.vue.event_location_error = "Event location needs to be longer.";
+        } else if (!app.vue.event_location) {
+            app.vue.event_location_error = "Event location must be a valid address";
             error = true;
         }
 
@@ -151,8 +154,6 @@ let init = (app) => {
         console.log("app.vue.event_end = " + String(app.vue.event_end));
         console.log("types = ", typeof app.vue.event_start);
 
-        // console.log("Giving: " + Date.parse(app.vue.event_start) + " and " + Date.parse(app.vue.event_end))
-
         if (!error) {
             axios.get(create_event_url,
                 {params: {event_name: app.vue.event_name,
@@ -160,6 +161,8 @@ let init = (app) => {
                         event_start:Date.parse(app.vue.event_start),
                         event_end:Date.parse(app.vue.event_end),
                         event_location: app.vue.event_location,
+                        event_lat: app.vue.event_lat,
+                        event_lng: app.vue.event_lng,
                         event_type: app.vue.event_type,
                     }}
             ).then(function (response) {
@@ -181,6 +184,8 @@ let init = (app) => {
                 app.vue.event_start = app.vue.events[i].event_start;
                 app.vue.event_end = app.vue.events[i].event_end;
                 app.vue.event_location = app.vue.events[i].location;
+                app.vue.event_lat = app.vue.events[i].lat;
+                app.vue.event_lng = app.vue.events[i].lng;
                 app.vue.event_type = app.vue.events[i].event_type;
                 app.vue.event_id = event_id;
 
@@ -194,11 +199,14 @@ let init = (app) => {
                 break;
             }
         }
-        app.vue.edit_modal_state = "modal is-active";
+        app.vue.modal_state = "modal is-active";
+        app.vue.edit_modal = true;
+        app.initMap();
     }
 
     app.cancel_edit_event = function () {
-        app.vue.edit_modal_state = "modal";
+        app.vue.modal_state = "modal";
+        app.vue.edit_modal = false;
         app.reset_event_errors();
     }
 
@@ -216,12 +224,14 @@ let init = (app) => {
                         edit_event_start:Date.parse(app.vue.event_start),
                         edit_event_end:Date.parse(app.vue.event_end),
                         edit_event_location: app.vue.event_location,
+                        event_lat: app.vue.event_lat,
+                        event_lng: app.vue.event_lng,
                         edit_event_type: app.vue.event_type,
                         edit_event_id: app.vue.event_id,}}
             ).then(function (response) {
                 //TODO: Check if form value is correct, else keep modal active and send error message
-                app.vue.edit_modal_state = "modal"
-
+                app.vue.modal_state = "modal"
+                app.vue.edit_modal = false;
                 app.get_events();
 
             });
@@ -231,11 +241,69 @@ let init = (app) => {
 
     app.delete_event = function () {
         axios.get(delete_event_url, {params: {delete_event_id: app.vue.event_id}}).then(function (response) {
-            app.vue.edit_modal_state = "modal"
-
+            app.vue.modal_state = "modal"
+            app.vue.edit_modal = false;
             app.get_events();
         });
     }
+
+    app.initMap = async function () {
+        const map = new google.maps.Map(document.getElementById("map"), {
+            center: { lat: 36.974, lng: -122.030 },
+            zoom: 13,
+        });
+        const input = document.getElementById("pac-input");
+        // Specify just the place data fields that you need.
+        const autocomplete = new google.maps.places.Autocomplete(input, {
+        fields: ["place_id", "geometry", "name", "formatted_address"],
+        });
+    
+        autocomplete.bindTo("bounds", map);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+    
+        const infowindow = new google.maps.InfoWindow();
+        const infowindowContent = document.getElementById("infowindow-content");
+    
+        infowindow.setContent(infowindowContent);
+    
+        const geocoder = new google.maps.Geocoder();
+        const marker = new google.maps.Marker({ map: map });
+    
+        marker.addListener("click", () => {
+            infowindow.open(map, marker);
+        });
+        autocomplete.addListener("place_changed", () => {
+            infowindow.close();
+    
+            const place = autocomplete.getPlace();
+    
+            if (!place.place_id) {
+                return;
+            }
+    
+            geocoder
+                .geocode({ placeId: place.place_id })
+                .then(({ results }) => {
+                map.setZoom(15);
+                map.setCenter(results[0].geometry.location);
+                app.vue.event_location = results[0].formatted_address;
+                app.vue.event_lat = results[0].geometry.location.lat();
+                app.vue.event_lng = results[0].geometry.location.lng();
+                // Set the position of the marker using the place ID and location.
+                marker.setPlace({
+                    placeId: place.place_id,
+                    location: results[0].geometry.location,
+                });
+                marker.setVisible(true);
+                infowindowContent.children["place-name"].textContent = place.name;
+                infowindowContent.children["place-address"].textContent = results[0].formatted_address;
+                infowindow.open(map, marker);
+                })
+                .catch((e) => window.alert("Geocoder failed due to: " + e));
+        });
+        
+    }
+    window.initMap = app.initMap;
 
 
     // This contains all the methods.
@@ -249,6 +317,7 @@ let init = (app) => {
         cancel_edit_event: app.cancel_edit_event,
         edit_event_publish: app.edit_event_publish,
         delete_event: app.delete_event,
+        initMap: app.initMap,
     };
 
     // This creates the Vue instance.
@@ -264,23 +333,6 @@ let init = (app) => {
         app.get_events();
 
         axios.get(get_current_datetime_url).then(function (response) {
-            // console.log(response.data.current_datetime)
-
-            // var currentDate = new Date();
-            // var datetime = "Last Sync: " + currentDate.getDay() + "/" + currentDate.getMonth()
-            // + "/" + currentDate.getFullYear() + " @ "
-            // + currentDate.getHours() + ":" + currentDate.getMinutes() + ":" + currentDate.getSeconds();
-            // console.log(datetime)
-
-            // let date = new Date();
-            // let cur_date = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + 'T' + date.getHours() + ":"
-            //     + date.getMinutes();
-            // console.log(new Date().toString())
-            // console.log(date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate() + 'T' + date.getHours() + ":"
-            //     + date.getMinutes());
-
-            // app.vue.current_datetime = response.data.current_datetime
-            // app.vue.current_datetime = Date().getTime()
         });
     };
 

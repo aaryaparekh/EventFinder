@@ -2,4 +2,5 @@ databases/*
 *.pyc
 __pycache__/*
 private/*
+node_modules/*
 static/js/config.js

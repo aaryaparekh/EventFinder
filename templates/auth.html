@@ -1,15 +1,19 @@
 [[extend "layout.html"]]
-<style>
-  .auth-container {
-    max-width: 80%;
-    min-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
-    border: 1px solid #e1e1e1;
-    border-radius: 10px;
-    padding: 20px;
-  }
-</style>
-<div class="auth-container">
-  [[=form]]
+
+<div class="container">
+  <div class="box mt-6">
+        <p class="has-text-centered">
+          You need to sign in to perform this action.
+        </p>
+
+        <div class="container">
+          <div class="buttons is-justify-content-center mt-4">
+            [[if globals().get('user'):]]
+            <a class="button is-light" href="[[=URL('auth/logout')]]">Sign out</a>
+            [[else:]]
+            <a class="button is-link" href="[[=URL('auth/plugin/oauth2google/login', vars=dict(next=URL('index')))]]">Sign In with Google</a>
+            [[pass]]
+          </div>
+        </div>
+  </div>
 </div>

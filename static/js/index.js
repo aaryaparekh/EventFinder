@@ -13,18 +13,20 @@ let init = (app) => {
         curr_save_state: [],
         is_live_filtered: false,
         current_page: 0,
-        last_page: 0,        
+        last_page: 0,
         input_field: '',
         event_type_filter_input: '',
-        event_type_filter_list: 
+        event_type_filter_list:
         [
         'Concert', 'Festival', 'Live Music', 'Sports', 'Charity', 'Fundraiser',
         'Exhibition', 'Theatre', 'Art', 'Family and Kids',
         'Fashion', 'Food and Drink', 'Comedy', 'Film', 'Outdoors',
-        'Gaming', 'Literary', 'Conference', 'Workshop' 
+        'Gaming', 'Literary', 'Conference', 'Workshop'
         ],
-    };    
-    
+        markers: [],
+        map: null,
+    };
+
     app.enumerate = (a) => {
         // This adds an _idx field to each element of the array.
         let k = 0;
@@ -37,7 +39,7 @@ let init = (app) => {
             e.show_content = false;
             const startDateObj = new Date(e.event_start);
             const endDateObj = new Date(e.event_end);
-            
+
             const startDate = startDateObj.toDateString();
             const endDate = endDateObj.toDateString();
             if (startDate === endDate) {
@@ -55,19 +57,19 @@ let init = (app) => {
                 minute: "2-digit",
                 hour12: true
             });
-            e.formatted_time = startTime + " - " + endTime;      
+            e.formatted_time = startTime + " - " + endTime;
         });
         return a;
     }
 
     app.set_pages_of_events = function () {
-        const events_per_page = 6; 
+        const events_per_page = 10;
         app.vue.pages_of_events = [];
         if (!app.vue.event_type_filter_input && !app.vue.is_live_filtered) {
             app.vue.curr_save_state = [...app.vue.all_events];
         }
 
-        if (app.vue.curr_save_state.length > 0) {   
+        if (app.vue.curr_save_state.length > 0) {
             for (var i = 0; i < app.vue.curr_save_state.length; i += events_per_page) {
                 var page = app.vue.curr_save_state.slice(i, i + events_per_page);
                 app.vue.pages_of_events.push(page);
@@ -99,8 +101,8 @@ let init = (app) => {
             app.filter_event_type(app.vue.all_events);
         }
         else {
-            app.filter_live_events(app.vue.all_events);  
-            app.filter_event_type(app.vue.curr_save_state);       
+            app.filter_live_events(app.vue.all_events);
+            app.filter_event_type(app.vue.curr_save_state);
         }
     }
 
@@ -115,6 +117,8 @@ let init = (app) => {
             });
         }
         app.set_pages_of_events();
+        app.deleteMarkers();
+        app.setMarkers();
     }
 
     app.filter_event_type = function (list) {
@@ -124,18 +128,24 @@ let init = (app) => {
             );
         }
         app.set_pages_of_events();
+        app.deleteMarkers();
+        app.setMarkers();
     }
 
     app.clear_filters = function () {
         app.vue.event_type_filter_input = "";
         app.vue.is_live_filtered = false;
         app.set_pages_of_events();
+        app.deleteMarkers();
+        app.setMarkers();
     }
 
     app.set_page = function (page) {
         app.vue.current_page = page;
         app.vue.filtered_events = [...app.vue.pages_of_events[app.vue.current_page]];
         app.sort_events(app.vue.filtered_events);
+        app.deleteMarkers();
+        app.setMarkers();
     }
 
     app.search_events = function () {
@@ -144,7 +154,7 @@ let init = (app) => {
                 e.event_name.toLowerCase().includes(app.vue.input_field.toString().toLowerCase())
             );
             app.sort_events(app.vue.filtered_events);
-        } 
+        }
         else {
             app.set_page(app.vue.current_page);
         }
@@ -180,13 +190,92 @@ let init = (app) => {
     }
 
     app.initMap = async function () {
+        const position = { lat: 36.994, lng: -122.0674 };
+
         const { Map } = await google.maps.importLibrary("maps");
-        this.vue.map = new Map(document.getElementById("map"), {
+        
+        app.vue.map = new Map(document.getElementById("map"), {
             center: { lat: 36.974, lng: -122.030 },
             zoom: 13,
         });
+        app.setMarkers();
+        
     }
     window.initMap = app.initMap;
+
+    app.setMarkers = async function () {
+        const { Marker } = await google.maps.importLibrary("marker");
+        for (let i = 0; i < app.vue.filtered_events.length; i++) {
+            const event = app.vue.filtered_events[i];
+            const position = { lat: event.lat, lng: event.lng };
+            const marker = new google.maps.Marker({
+                map: app.vue.map,
+                position: position,
+                title: event.event_name,
+                animation: google.maps.Animation.DROP,
+            });
+            app.vue.markers.push(marker);
+            const contentString = 
+            '<div id="content">' +
+            '<h1>' +
+            event.event_name +
+            '</h1>' +
+            '<div>' +
+            event.formatted_date +
+            '</div>' +
+            '<div>' +
+            event.formatted_time +
+            '</div>' +
+            '<div>' +
+            event.location +
+            '</div>' +
+            "</div>";
+
+            const infowindow = new google.maps.InfoWindow({
+                content: contentString,
+              });
+            event.isMarkerOpen = false;
+            marker.addListener("click", () => {
+                if (event.isMarkerOpen) {
+                    infowindow.close({
+                        anchor: marker,
+                        map,
+                    });
+                    if (event.show_content) {
+                        app.toggle_card_content(i);
+                    }
+                    event.isMarkerOpen = false;
+                } else {
+                    infowindow.open({
+                        anchor: marker,
+                        map,
+                    });
+                    if (!event.show_content) {
+                        app.toggle_card_content(i);
+                    }
+                    event.isMarkerOpen = true;
+                }
+            });
+            infowindow.addListener('closeclick', function() {
+                if (event.show_content) {
+                    app.toggle_card_content(i);
+                }
+                event.isMarkerOpen = false;
+              });
+        }
+    }
+
+    app.deleteMarkers = function () {
+        for (var i = 0; i < app.vue.markers.length; i++) {
+          app.vue.markers[i].setMap(null);
+        }
+        app.vue.markers = [];
+      }
+
+    app.go_to_marker = function (lat,lng) {
+        app.vue.map.setZoom(14);
+        app.vue.map.setCenter({ lat, lng });
+    }
 
     app.methods = {
         toggle_live_events: app.toggle_live_events,
@@ -197,6 +286,7 @@ let init = (app) => {
         clear_search: app.clear_search,
         toggle_card_content: app.toggle_card_content,
         initMap: app.initMap,
+        go_to_marker: app.go_to_marker,
     };
 
     app.vue = new Vue({

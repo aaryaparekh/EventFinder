@@ -23,6 +23,7 @@ let init = (app) => {
         'Fashion', 'Food and Drink', 'Comedy', 'Film', 'Outdoors',
         'Gaming', 'Literary', 'Conference', 'Workshop' 
         ],
+        markers: [],
     };    
     
     app.enumerate = (a) => {
@@ -188,13 +189,18 @@ let init = (app) => {
             center: { lat: 36.974, lng: -122.030 },
             zoom: 13,
         });
-
-        const marker = new Marker({
-            map: this.map,
-            position: position,
-            title: "Porter Meadows",
-          });
+        for (let i = 0; i < this.vue.all_events.length; i++) {
+            const event = this.vue.all_events[i];
+            const position = { lat: event.lat, lng: event.lng };
+            const marker = new google.maps.Marker({
+                map: this.map,
+                position: position,
+                title: event.event_name,
+                animation: google.maps.Animation.DROP,
+            });
+        }
     }
+        
     // app.initMap = function () {
     //     axios.get(script.src)
     //     .then(() => {

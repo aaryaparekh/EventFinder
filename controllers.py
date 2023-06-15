@@ -43,11 +43,11 @@ def index():
         get_home_events_url = URL('home_list_events', signer=url_signer),
     )
 
-@action("Profile")
-@action.uses("profile.html", auth, T)
-def Profile():
-    actions = {"allowed_actions": auth.param.allowed_actions}
-    return dict(actions=actions)
+# @action("Profile")
+# @action.uses("profile.html", auth, T)
+# def Profile():
+#     actions = {"allowed_actions": auth.param.allowed_actions}
+#     return dict(actions=actions)
 
 
 @action("home_list_events")

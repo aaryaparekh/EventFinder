@@ -42,6 +42,8 @@ let init = (app) => {
         'Fashion', 'Food and Drink', 'Comedy', 'Film', 'Outdoors',
         'Gaming', 'Literary', 'Conference', 'Workshop' 
         ],
+        map: null,
+        markers: [],
     };
     
     app.enumerate = (a) => {
@@ -69,12 +71,12 @@ let init = (app) => {
 
     app.add_new_event = function () {
         app.vue.modal_state = "modal is-active";
-        app.initMap();
         app.reset_event_inputs();
     }
 
     app.cancel_add_new_event = function () {
         app.vue.modal_state = "modal";
+        app.refresh_map();
     }
 
     app.reset_event_errors = function () {
@@ -170,6 +172,7 @@ let init = (app) => {
                 app.vue.modal_state = "modal"
 
                 app.get_events();
+                app.refresh_map();
             });
         }
     }
@@ -201,13 +204,13 @@ let init = (app) => {
         }
         app.vue.modal_state = "modal is-active";
         app.vue.edit_modal = true;
-        app.initMap();
     }
 
     app.cancel_edit_event = function () {
         app.vue.modal_state = "modal";
         app.vue.edit_modal = false;
         app.reset_event_errors();
+        app.refresh_map();
     }
 
     app.edit_event_publish = function () {
@@ -233,7 +236,7 @@ let init = (app) => {
                 app.vue.modal_state = "modal"
                 app.vue.edit_modal = false;
                 app.get_events();
-
+                app.refresh_map();
             });
 
         }
@@ -244,13 +247,16 @@ let init = (app) => {
             app.vue.modal_state = "modal"
             app.vue.edit_modal = false;
             app.get_events();
+            app.refresh_map();
         });
     }
 
     app.initMap = async function () {
-        const map = new google.maps.Map(document.getElementById("map"), {
+        app.vue.map = new google.maps.Map(document.getElementById("map"), {
             center: { lat: 36.974, lng: -122.030 },
             zoom: 13,
+            mapTypeControl: false,
+            fullscreenControl: false,
         });
         const input = document.getElementById("pac-input");
         // Specify just the place data fields that you need.
@@ -258,8 +264,8 @@ let init = (app) => {
         fields: ["place_id", "geometry", "name", "formatted_address"],
         });
     
-        autocomplete.bindTo("bounds", map);
-        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+        autocomplete.bindTo("bounds", app.vue.map);
+        app.vue.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
     
         const infowindow = new google.maps.InfoWindow();
         const infowindowContent = document.getElementById("infowindow-content");
@@ -267,10 +273,11 @@ let init = (app) => {
         infowindow.setContent(infowindowContent);
     
         const geocoder = new google.maps.Geocoder();
-        const marker = new google.maps.Marker({ map: map });
+        const marker = new google.maps.Marker({ map: app.vue.map });
+        app.vue.markers.push(marker);
     
         marker.addListener("click", () => {
-            infowindow.open(map, marker);
+            infowindow.open(app.vue.map, marker);
         });
         autocomplete.addListener("place_changed", () => {
             infowindow.close();
@@ -284,8 +291,8 @@ let init = (app) => {
             geocoder
                 .geocode({ placeId: place.place_id })
                 .then(({ results }) => {
-                map.setZoom(15);
-                map.setCenter(results[0].geometry.location);
+                app.vue.map.setZoom(15);
+                app.vue.map.setCenter(results[0].geometry.location);
                 app.vue.event_location = results[0].formatted_address;
                 app.vue.event_lat = results[0].geometry.location.lat();
                 app.vue.event_lng = results[0].geometry.location.lng();
@@ -297,13 +304,23 @@ let init = (app) => {
                 marker.setVisible(true);
                 infowindowContent.children["place-name"].textContent = place.name;
                 infowindowContent.children["place-address"].textContent = results[0].formatted_address;
-                infowindow.open(map, marker);
+                infowindow.open(app.vue.map, marker);
                 })
                 .catch((e) => window.alert("Geocoder failed due to: " + e));
         });
         
     }
     window.initMap = app.initMap;
+
+    app.refresh_map = function () {
+        app.vue.map.setZoom(13);
+        app.vue.map.setCenter({ lat: 36.974, lng: -122.030 });
+        document.getElementById("pac-input").value = '';
+        for (var i = 0; i < app.vue.markers.length; i++) {
+            app.vue.markers[i].setMap(null);
+          }
+          app.vue.markers = [];
+    }
 
 
     // This contains all the methods.
@@ -318,6 +335,7 @@ let init = (app) => {
         edit_event_publish: app.edit_event_publish,
         delete_event: app.delete_event,
         initMap: app.initMap,
+        refresh_map: app.refresh_map,
     };
 
     // This creates the Vue instance.
@@ -331,6 +349,7 @@ let init = (app) => {
     app.init = () => {
         // Put here any initialization code.
         app.get_events();
+        app.initMap();
 
         axios.get(get_current_datetime_url).then(function (response) {
         });

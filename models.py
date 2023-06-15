@@ -27,8 +27,9 @@ db.define_table(
     Field('event_end', type='datetime', defaul=datetime.now()),
     Field('event_name', type='string', requires=IS_NOT_EMPTY()),
     Field('location', type='string', requires=IS_NOT_EMPTY()),
+    Field('lat', type="float", default=0, requires=IS_NOT_EMPTY()),
+    Field('lng', type="float", default=0, requires=IS_NOT_EMPTY()),
     Field('description', type='text', requires=IS_NOT_EMPTY()),
-    Field('image_filepath', type='string'),
     Field('event_type', default=''),
 )
 
@@ -38,8 +39,11 @@ db.event.id.writable = False
 db.event.creation_timestamp.readable = False
 db.event.creation_timestamp.writable = False
 
-db.event.image_filepath.readable = False
-db.event.image_filepath.writable = False
+db.event.lat.readable = False
+db.event.lat.writable = False
+
+db.event.lng.readable = False
+db.event.lng.writable = False
 
 db.auth_user.id.readable = False
 db.auth_user.id.writable = False

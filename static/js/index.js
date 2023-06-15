@@ -62,7 +62,7 @@ let init = (app) => {
     }
 
     app.set_pages_of_events = function () {
-        const events_per_page = 6; 
+        const events_per_page = 2; 
         app.vue.pages_of_events = [];
         if (!app.vue.event_type_filter_input && !app.vue.is_live_filtered) {
             app.vue.curr_save_state = [...app.vue.all_events];
@@ -116,6 +116,7 @@ let init = (app) => {
             });
         }
         app.set_pages_of_events();
+        app.initMap();
     }
 
     app.filter_event_type = function (list) {
@@ -125,18 +126,21 @@ let init = (app) => {
             );
         }
         app.set_pages_of_events();
+        app.initMap();
     }
 
     app.clear_filters = function () {
         app.vue.event_type_filter_input = "";
         app.vue.is_live_filtered = false;
         app.set_pages_of_events();
+        app.initMap();
     }
 
     app.set_page = function (page) {
         app.vue.current_page = page;
         app.vue.filtered_events = [...app.vue.pages_of_events[app.vue.current_page]];
         app.sort_events(app.vue.filtered_events);
+        app.initMap();
     }
 
     app.search_events = function () {
@@ -189,8 +193,8 @@ let init = (app) => {
             center: { lat: 36.974, lng: -122.030 },
             zoom: 13,
         });
-        for (let i = 0; i < this.vue.all_events.length; i++) {
-            const event = this.vue.all_events[i];
+        for (let i = 0; i < app.vue.filtered_events.length; i++) {
+            const event = app.vue.filtered_events[i];
             const position = { lat: event.lat, lng: event.lng };
             const marker = new google.maps.Marker({
                 map: this.map,
@@ -198,34 +202,20 @@ let init = (app) => {
                 title: event.event_name,
                 animation: google.maps.Animation.DROP,
             });
+            const infowindow = new google.maps.InfoWindow({
+                content: event.event_name + "\n" + event.location,
+                ariaLabel: event.event_name,
+              });
+            marker.addListener("click", () => {
+                infowindow.open({
+                    anchor: marker,
+                    map,
+                });
+                app.toggle_card_content(i);
+            });
         }
     }
-        
-    // app.initMap = function () {
-    //     axios.get(script.src)
-    //     .then(() => {
-    //         const position = { lat: 36.994, lng: -122.0674 };
-    //         const { Map, Marker } = google.maps;
-    //         this.map = new Map(document.getElementById("map"), {
-    //             center: { lat: 36.974, lng: -122.030 },
-    //             zoom: 13,
-    //         });
-    //         const marker = new Marker({
-    //             map: this.map,
-    //             position: position,
-    //             title: "Porter Meadows",
-    //             });
-    //         const marker2 = new Marker({
-    //             map: this.map,
-    //             position: { lat: 36.96657342716043, lng: -122.01816041742845},
-    //             title: "Boardwalk",
-    //             });
-    //         })
-            
-    //     .catch((error) => {
-    //         console.error("Failed to load Google Maps API:", error);
-    // });
-    // }
+ 
     window.initMap = app.initMap;
 
     app.methods = {
